@@ -12,6 +12,9 @@ class ManagerAbstract extends ComponentAbstract {
 	 *
 	 */
 	public function init() {
+		if ( 0 < count( array_filter( $this->modules, 'is_object' ) ) ) {
+			return;
+		}
 		$modules = [];
 
 		$reflect   = new \ReflectionClass( get_called_class() );
