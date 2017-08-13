@@ -33,7 +33,7 @@ abstract class BaseObjectAbstract implements ComponentInterface {
 	public function __set( $name, $value ) {
 		$func = "set_{$name}";
 		if ( method_exists( $this, $func ) ) {
-			$this->$func();
+			$this->$func( $value );
 
 			return;
 		}
@@ -43,7 +43,10 @@ abstract class BaseObjectAbstract implements ComponentInterface {
 		}
 		if ( isset( $GLOBALS[ $name ] ) ) {
 			$GLOBALS[ $name ] = $value;
+
+			return;
 		}
+		throw new InexistentProperty( sprintf( 'Inexistent property: %s', $name ) );
 	}
 
 	public function __isset( $name ) {
