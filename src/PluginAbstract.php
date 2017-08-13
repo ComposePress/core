@@ -125,7 +125,7 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 	 */
 	protected function set_container() {
 		$slug      = str_replace( '-', '_', static::PLUGIN_SLUG );
-		$container = "${$slug}_container";
+		$container = "{$slug}_container";
 		if ( function_exists( ! $container ) ) {
 			throw new ContainerNotExists( sprintf( 'Container function %s does not exist.', $container ) );
 		}
