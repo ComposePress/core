@@ -142,10 +142,30 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 		if ( ! $this->get_dependancies_exist() ) {
 			return;
 		}
-		$components = get_object_vars( $this );
-		$components = array_filter( $components, function ( $component ) {
-			return $component instanceof ComponentAbstract;
-		} );
+		$components = ( new \ReflectionClass( $this ) )->getProperties();
+		$components = array_filter(
+			$components,
+			/**
+			 * @param \ReflectionProperty $component
+			 *
+			 * @return bool
+			 */
+			function ( $component ) {
+				$getter = 'get_' . $component->name;
+
+				return method_exists( $this, $getter ) && ( new \ReflectionMethod( $this, $getter ) )->isPublic() && $this->$getter() instanceof ComponentAbstract;
+			} );
+		$components = array_map(
+		/**
+		 * @param \ReflectionProperty $component
+		 *
+		 * @return ComponentAbstract
+		 */
+			function ( $component ) {
+				$getter = 'get_' . $component->name;
+
+				return $this->$getter();
+			}, $components );
 		/** @var ComponentAbstract $component */
 		foreach ( $components as $component ) {
 			$component->parent = $this;
