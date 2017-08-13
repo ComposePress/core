@@ -140,19 +140,21 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 	 */
 	public function init() {
 		if ( ! $this->get_dependancies_exist() ) {
-			$components = get_object_vars( $this );
-			$components = array_filter( $components, function ( $component ) {
-				return $component instanceof ComponentAbstract;
-			} );
-			/** @var ComponentAbstract $component */
-			foreach ( $components as $component ) {
-				$component->parent = $this;
-
-			}
-			foreach ( $components as $component ) {
-				$component->init();
-			}
+			return;
 		}
+		$components = get_object_vars( $this );
+		$components = array_filter( $components, function ( $component ) {
+			return $component instanceof ComponentAbstract;
+		} );
+		/** @var ComponentAbstract $component */
+		foreach ( $components as $component ) {
+			$component->parent = $this;
+
+		}
+		foreach ( $components as $component ) {
+			$component->init();
+		}
+
 	}
 
 	/**
