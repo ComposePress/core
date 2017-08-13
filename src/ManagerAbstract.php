@@ -17,7 +17,6 @@ class ManagerAbstract extends ComponentAbstract {
 		$reflect   = new \ReflectionClass( get_called_class() );
 		$class     = strtolower( $reflect->getShortName() );
 		$namespace = $reflect->getNamespaceName();
-		$namespace = str_replace( '\\', '/', $namespace );
 		$component = strtolower( basename( $namespace ) );
 
 		$slug         = $this->app->get_safe_slug();
@@ -25,9 +24,9 @@ class ManagerAbstract extends ComponentAbstract {
 		$modules_list = apply_filters( $filter, $this->modules );
 
 		foreach ( $modules_list as $module ) {
-			$class = $module;
+			$class = trim( $module, '\\' );
 			if ( false === strpos( $module, '\\' ) ) {
-				$class = $this->namespace . '\\' . $module;
+				$class = $namespace . '\\' . $module;
 			}
 			$modules[ $module ] = $this->app->container->create( $class );
 		}
