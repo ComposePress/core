@@ -14,19 +14,23 @@ use pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists;
  */
 abstract class PluginAbstract extends BaseObjectAbstract {
 	/**
-	 *
+	 * Default version constant
 	 */
 	const VERSION = '';
 	/**
-	 *
+	 * Default slug constant
 	 */
 	const PLUGIN_SLUG = '';
 
 	/**
+	 * Path to plugin entry file
+	 *
 	 * @var string
 	 */
 	protected $plugin_file;
 	/**
+	 * Dependency Container
+	 *
 	 * @var Dice
 	 */
 	protected $container;
@@ -114,6 +118,8 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 	/**
 	 * @throws \pcfreak30\WordPress\Plugin\Framework\Exception\ContainerInvalid
 	 * @throws \pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists
+	 *
+	 * @return void
 	 */
 	protected function set_container() {
 		$slug      = str_replace( '-', '_', static::PLUGIN_SLUG );
@@ -128,7 +134,7 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 	}
 
 	/**
-	 *
+	 * Plugin initialization
 	 */
 	public function init() {
 		if ( ! $this->get_dependancies_exist() ) {
@@ -161,6 +167,9 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 		return static::PLUGIN_SLUG;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_safe_slug() {
 		return strtolower( str_replace( '-', '_', $this->get_slug() ) );
 	}
