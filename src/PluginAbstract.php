@@ -164,4 +164,18 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 	public function get_safe_slug() {
 		return strtolower( str_replace( '-', '_', $this->get_slug() ) );
 	}
+
+	/**
+	 * @param null $field
+	 *
+	 * @return string|array
+	 */
+	public function get_plugin_info( $field = null ) {
+		$info = get_plugin_data( $this->plugin_file );
+		if ( null !== $field && isset( $info[ $field ] ) ) {
+			return $info[ $field ];
+		}
+
+		return $info;
+	}
 }
