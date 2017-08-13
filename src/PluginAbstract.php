@@ -130,7 +130,7 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 			throw new ContainerNotExists( sprintf( 'Container function %s does not exist.', $container ) );
 		}
 		$this->container = $container();
-		if ( ( $this->container instanceof Dice ) ) {
+		if ( ! ( $this->container instanceof Dice ) ) {
 			throw new ContainerInvalid( sprintf( 'Container function %s does not return a Dice instance.', $container ) );
 		}
 	}
