@@ -14,7 +14,7 @@ use pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists;
  *
  * @property Dice\Dice $comtainer
  */
-abstract class PluginAbstract extends BaseObjectAbstract {
+abstract class PluginAbstract extends ComponentAbstract {
 	/**
 	 * Default version constant
 	 */
