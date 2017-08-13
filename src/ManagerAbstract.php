@@ -22,7 +22,7 @@ class ManagerAbstract extends ComponentAbstract {
 		$namespace = $reflect->getNamespaceName();
 		$component = strtolower( basename( $namespace ) );
 
-		$slug         = $this->app->get_safe_slug();
+		$slug         = $this->plugin->get_safe_slug();
 		$filter       = "{$slug}_{$component}_{$class}_modules";
 		$modules_list = apply_filters( $filter, $this->modules );
 
@@ -31,7 +31,7 @@ class ManagerAbstract extends ComponentAbstract {
 			if ( false === strpos( $module, '\\' ) ) {
 				$class = $namespace . '\\' . $module;
 			}
-			$modules[ $module ] = $this->app->container->create( $class );
+			$modules[ $module ] = $this->plugin->container->create( $class );
 		}
 		foreach ( $modules_list as $module ) {
 			$modules[ $module ]->parent = $this;

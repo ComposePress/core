@@ -8,14 +8,14 @@ namespace pcfreak30\WordPress\Plugin\Framework;
  * Class ComponentAbstract
  *
  * @package pcfreak30\WordPress\Plugin\Framework/*
- * @property PluginAbstract    $app
+ * @property PluginAbstract    $plugin
  * @property ComponentAbstract $parent
  */
 abstract class ComponentAbstract extends BaseObjectAbstract {
 	/**
 	 * @var PluginAbstract
 	 */
-	private $app;
+	private $plugin;
 
 	/**
 	 * @var ComponentAbstract
@@ -31,7 +31,7 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 	 *
 	 */
 	public function __destruct() {
-		$this->app    = null;
+		$this->plugin = null;
 		$this->parent = null;
 	}
 
@@ -52,16 +52,16 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 	/**
 	 * @return PluginAbstract
 	 */
-	public function get_app() {
-		if ( null === $this->app ) {
+	public function get_plugin() {
+		if ( null === $this->plugin ) {
 			$parent = $this;
 			while ( $parent->has_parent() ) {
 				$parent = $parent->parent;
 			}
-			$this->app = $parent;
+			$this->plugin = $parent;
 		}
 
-		return $this->app;
+		return $this->plugin;
 	}
 
 	/**
