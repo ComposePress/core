@@ -170,6 +170,14 @@ abstract class PluginAbstract extends BaseObjectAbstract {
 	/**
 	 * @return string
 	 */
+	public function get_version() {
+		return static::VERSION;
+	}
+
+
+	/**
+	 * @return string
+	 */
 	public function get_safe_slug() {
 		return strtolower( str_replace( '-', '_', $this->get_slug() ) );
 	}
