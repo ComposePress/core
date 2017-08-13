@@ -56,7 +56,7 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 		if ( null === $this->app ) {
 			$parent = $this;
 			while ( $parent->has_parent() ) {
-				$parent = $this->parent;
+				$parent = $parent->parent;
 			}
 			$this->app = $parent;
 		}
