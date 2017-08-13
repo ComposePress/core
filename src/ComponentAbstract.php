@@ -3,8 +3,12 @@
 
 namespace pcfreak30\WordPress\Plugin\Framework;
 
-/*
- * @property $app PluginAbstract
+
+/**
+ * Class ComponentAbstract
+ *
+ * @package pcfreak30\WordPress\Plugin\Framework/*
+ * @property $app    PluginAbstract
  * @property $parent PluginAbstract
  */
 abstract class ComponentAbstract extends BaseObjectAbstract {
@@ -60,6 +64,9 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 		return $this->app;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function has_parent() {
 		return null !== $this->parent;
 	}
