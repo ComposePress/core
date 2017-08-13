@@ -2,20 +2,22 @@
 
 namespace pcfreak30\WordPress\Plugin\Framework;
 
-/*
- * @property \wpdb $wpdb
- * @property \WP_Post $post
- * @property \WP_Rewrite $wp_rewrite
- * @property \WP $wp
- * @property \WP_Query $wp_query
- * @property \WP_Query $wp_the_query
- * @property string $pagenow
- * @property int $page
- */
-
 use pcfreak30\WordPress\Plugin\Framework\Exception\InexistentProperty;
 use pcfreak30\WordPress\Plugin\Framework\Exception\ReadOnly;
 
+/**
+ * Class BaseObjectAbstract
+ *
+ * @package pcfreak30\WordPress\Plugin\Framework
+ * @property \wpdb       $wpdb
+ * @property \WP_Post    $post
+ * @property \WP_Rewrite $wp_rewrite
+ * @property \WP         $wp
+ * @property \WP_Query   $wp_query
+ * @property \WP_Query   $wp_the_query
+ * @property string      $pagenow
+ * @property int         $page
+ */
 abstract class BaseObjectAbstract implements ComponentInterface {
 	public function __get( $name ) {
 		$func = "get_{$name}";
