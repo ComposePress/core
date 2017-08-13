@@ -20,7 +20,7 @@ class ManagerAbstract extends ComponentAbstract {
 		$namespace = str_replace( '\\', '/', $namespace );
 		$component = strtolower( basename( $namespace ) );
 
-		$slug         = str_replace( '-', '_', $this->app->get_slug() );
+		$slug         = $this->app->get_safe_slug();
 		$filter       = "{$slug}_{$component}_{$class}_modules";
 		$modules_list = apply_filters( $filter, $this->modules );
 
