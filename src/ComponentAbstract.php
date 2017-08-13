@@ -8,8 +8,8 @@ namespace pcfreak30\WordPress\Plugin\Framework;
  * Class ComponentAbstract
  *
  * @package pcfreak30\WordPress\Plugin\Framework/*
- * @property $app    PluginAbstract
- * @property $parent PluginAbstract
+ * @property PluginAbstract    $app
+ * @property ComponentAbstract $parent
  */
 abstract class ComponentAbstract extends BaseObjectAbstract {
 	/**

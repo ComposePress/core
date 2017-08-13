@@ -11,6 +11,8 @@ use pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists;
  * Class PluginAbstract
  *
  * @package pcfreak30\WordPress\Plugin\Framework
+ *
+ * @property Dice\Dice $comtainer
  */
 abstract class PluginAbstract extends BaseObjectAbstract {
 	/**
