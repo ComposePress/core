@@ -51,16 +51,15 @@ class ManagerAbstract extends ComponentAbstract {
 	 * @return bool|mixed
 	 */
 	public function get_module( $name ) {
-		foreach ( $this->modules as $module ) {
-			try {
-
-				if ( is_a( $module, ( new \ReflectionClass( $this ) )->getNamespaceName() . '\\' . $name ) ) {
-					return $module;
-				}
-
-			} catch ( \ReflectionException $e ) {
-
-			}
+		if ( null === $name ) {
+			return false;
+		}
+		if ( isset( $this->modules[ $name ] ) ) {
+			return $this->modules[ $name ];
+		}
+		$name = "\\{$name}";
+		if ( isset( $this->modules[ $name ] ) ) {
+			return $this->modules[ $name ];
 		}
 
 		return false;
