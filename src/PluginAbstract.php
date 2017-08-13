@@ -77,21 +77,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 	/**
 	 * @return void
 	 */
-	public function activate() {
-		$slug     = $this->get_safe_slug();
-		$constant = sprintf( '%s_COMPOSER_RAN', $slug );
-		$composer = dirname( $this->plugin_file ) . '/wordpress-web-composer/class-wordpress-web-composer.php';
-		if ( ! ( defined( $constant ) && constant( $constant ) ) ) {
-			if ( ! $this->get_wp_filesystem()->is_file( $composer ) ) {
-				throw new ComposerMissing( sprintf( 'Composer is missing for plugin: %s', $slug ) );
-			}
-			/** @noinspection PhpIncludeInspection */
-			include_once $composer;
-			$web_composer = new \WordPress_Web_Composer( $slug );
-			$web_composer->set_install_target( dirname( $this->plugin_file ) );
-			$web_composer->run();
-		}
-	}
+	abstract public function activate();
 
 	/**
 	 * @return void
