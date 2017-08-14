@@ -114,4 +114,15 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 		return $components;
 	}
 
+	/**
+	 * Setup co,ponents and run init
+	 */
+	protected function setup_components() {
+		$components = $this->get_components();
+		$this->set_component_parents( $components );
+		foreach ( $components as $component ) {
+			$component->init();
+		}
+	}
+
 }
