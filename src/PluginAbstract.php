@@ -12,7 +12,7 @@ use pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists;
  *
  * @package pcfreak30\WordPress\Plugin\Framework
  *
- * @property Dice\Dice $comtainer
+ * @property Dice\Dice $container
  */
 abstract class PluginAbstract extends ComponentAbstract {
 	/**
