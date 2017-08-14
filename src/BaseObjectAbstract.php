@@ -56,9 +56,7 @@ abstract class BaseObjectAbstract implements ComponentInterface {
 		if ( method_exists( $this, $func ) ) {
 			return true;
 		}
-		if ( isset( $GLOBALS[ $name ] ) ) {
-			return $GLOBALS[ $name ];
-		}
-		throw new InexistentProperty( sprintf( 'Inexistent property: %s', $name ) );
+
+		return isset( $GLOBALS[ $name ] );
 	}
 }
