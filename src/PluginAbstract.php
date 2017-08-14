@@ -128,13 +128,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 		if ( ! $this->get_dependancies_exist() ) {
 			return;
 		}
-
-		$components = $this->get_components();
-		$this->set_component_parents( $components );
-		foreach ( $components as $component ) {
-			$component->init();
-		}
-
+		$this->setup_components();
 	}
 
 	/**
