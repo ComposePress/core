@@ -128,6 +128,30 @@ abstract class PluginAbstract extends ComponentAbstract {
 		if ( ! $this->get_dependancies_exist() ) {
 			return;
 		}
+
+		$components = $this->get_components();
+		$this->set_component_parents( $components );
+		foreach ( $components as $component ) {
+			$component->init();
+		}
+
+	}
+
+	/**
+	 * @param $components
+	 */
+	protected function set_component_parents( $components ) {
+		/** @var ComponentAbstract $component */
+		foreach ( $components as $component ) {
+			$component->parent = $this;
+
+		}
+	}
+
+	/**
+	 * @return array|\ReflectionProperty[]
+	 */
+	protected function get_components() {
 		$components = ( new \ReflectionClass( $this ) )->getProperties();
 		$components = array_filter(
 			$components,
@@ -152,15 +176,8 @@ abstract class PluginAbstract extends ComponentAbstract {
 
 				return $this->$getter();
 			}, $components );
-		/** @var ComponentAbstract $component */
-		foreach ( $components as $component ) {
-			$component->parent = $this;
 
-		}
-		foreach ( $components as $component ) {
-			$component->init();
-		}
-
+		return $components;
 	}
 
 	/**
