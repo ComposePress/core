@@ -115,7 +115,7 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 	}
 
 	/**
-	 * Setup co,ponents and run init
+	 * Setup components and run init
 	 */
 	protected function setup_components() {
 		$components = $this->get_components();
