@@ -104,13 +104,15 @@ abstract class PluginAbstract extends ComponentAbstract {
 	}
 
 	/**
+	 * @param string $slug
+	 *
 	 * @throws \pcfreak30\WordPress\Plugin\Framework\Exception\ContainerInvalid
 	 * @throws \pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists
-	 *
-	 * @return void
 	 */
-	protected function set_container() {
-		$slug      = str_replace( '-', '_', static::PLUGIN_SLUG );
+	protected function set_container( $slug = null ) {
+		if ( null === $slug ) {
+			$slug = str_replace( '-', '_', static::PLUGIN_SLUG );
+		}
 		$container = "{$slug}_container";
 		if ( ! function_exists( $container ) ) {
 			throw new ContainerNotExists( sprintf( 'Container function %s does not exist.', $container ) );
