@@ -161,7 +161,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 	}
 
 	/**
-	 * @param null $field
+	 * @param string $field
 	 *
 	 * @return string|array
 	 */
