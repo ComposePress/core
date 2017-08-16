@@ -50,7 +50,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 	 *
 	 */
 	private function find_plugin_file() {
-		$dir  = __DIR__;
+		$dir  = dirname( ( new \ReflectionClass( $this ) )->getFileName() );
 		$file = null;
 		do {
 			$last_dir = $dir;
