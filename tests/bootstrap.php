@@ -2,7 +2,9 @@
 define( 'ABSPATH', '/tmp/wordpress/' );
 // Initialize composer
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
-
+if ( ! class_exists( '\PHPUnit_Framework_TestCase' ) && class_exists( '\PHPUnit\Framework\TestCase' ) ) {
+	class_alias( '\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase' );
+}
 WP_Mock::bootstrap();
 require_once ABSPATH . 'wp-includes/class-wp-error.php';
 function trailingslashit( $string ) {
