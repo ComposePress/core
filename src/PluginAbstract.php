@@ -141,23 +141,22 @@ abstract class PluginAbstract extends ComponentAbstract {
 	/**
 	 * @return string
 	 */
-	public function get_slug() {
-		return static::PLUGIN_SLUG;
-	}
-
-	/**
-	 * @return string
-	 */
 	public function get_version() {
 		return static::VERSION;
 	}
-
 
 	/**
 	 * @return string
 	 */
 	public function get_safe_slug() {
 		return strtolower( str_replace( '-', '_', $this->get_slug() ) );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_slug() {
+		return static::PLUGIN_SLUG;
 	}
 
 	/**

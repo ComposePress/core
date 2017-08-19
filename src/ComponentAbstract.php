@@ -75,14 +75,14 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 		return null !== $this->parent;
 	}
 
-
 	/**
-	 * @param $components
+	 * Setup components and run init
 	 */
-	protected function set_component_parents( $components ) {
-		/** @var ComponentAbstract $component */
+	protected function setup_components() {
+		$components = $this->get_components();
+		$this->set_component_parents( $components );
 		foreach ( $components as $component ) {
-			$component->parent = $this;
+			$component->init();
 		}
 	}
 
@@ -119,13 +119,12 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 	}
 
 	/**
-	 * Setup components and run init
+	 * @param $components
 	 */
-	protected function setup_components() {
-		$components = $this->get_components();
-		$this->set_component_parents( $components );
+	protected function set_component_parents( $components ) {
+		/** @var ComponentAbstract $component */
 		foreach ( $components as $component ) {
-			$component->init();
+			$component->parent = $this;
 		}
 	}
 
