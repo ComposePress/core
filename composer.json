@@ -10,9 +10,18 @@
     }
   ],
   "require": {},
+  "require-dev": {
+    "mockery/mockery": "^0.9.9",
+    "10up/wp_mock": "dev-dev"
+  },
   "autoload": {
     "psr-4": {
       "pcfreak30\\WordPress\\Plugin\\Framework\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "pcfreak30\\WordPress\\Plugin\\Framework\\": "tests/"
     }
   }
 }
