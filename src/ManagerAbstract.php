@@ -4,9 +4,7 @@
 namespace pcfreak30\WordPress\Plugin\Framework;
 
 class ManagerAbstract extends ComponentAbstract {
-	protected $modules = [
-
-	];
+	protected $modules = [];
 
 	/**
 	 *
