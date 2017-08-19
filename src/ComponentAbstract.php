@@ -61,6 +61,10 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 			$this->plugin = $parent;
 		}
 
+		if ( $this->plugin === $this && ! ( $this instanceof PluginAbstract ) ) {
+			throw new \Exception( 'Plugin property is equal to self. Did you forget to set the parent or create a getter?' );
+		}
+
 		return $this->plugin;
 	}
 
