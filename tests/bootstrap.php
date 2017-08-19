@@ -52,5 +52,3 @@ function is_wp_error( $thing ) {
 }
 
 wp_set_lang_dir();
-\WP_Mock::userFunction( 'register_activation_hook' );
-\WP_Mock::userFunction( 'register_deactivation_hook' );
