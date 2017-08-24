@@ -3,9 +3,8 @@
 namespace pcfreak30\ComposePress;
 
 use Dice\Dice;
-use pcfreak30\WordPress\Plugin\Framework\Exception\ComposerMissing;
-use pcfreak30\WordPress\Plugin\Framework\Exception\ContainerInvalid;
-use pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists;
+use pcfreak30\ComposePress\Exception\ContainerInvalid;
+use pcfreak30\ComposePress\Exception\ContainerNotExists;
 
 /**
  * Class PluginAbstract
@@ -103,11 +102,10 @@ abstract class PluginAbstract extends ComponentAbstract {
 		return $this->container;
 	}
 
+
 	/**
-	 * @throws \pcfreak30\WordPress\Plugin\Framework\Exception\ContainerInvalid
-	 * @throws \pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists
-	 *
-	 * @return void
+	 * @throws Exception\ContainerInvalid
+	 * @throws Exception\ContainerNotExists
 	 */
 	protected function set_container() {
 		$slug      = str_replace( '-', '_', static::PLUGIN_SLUG );
@@ -125,7 +123,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 	 * Plugin initialization
 	 */
 	public function init() {
-		if ( ! $this->get_dependancies_exist() ) {
+		if ( ! $this->get_dependencies_exist() ) {
 			return;
 		}
 		$this->setup_components();
@@ -134,7 +132,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 	/**
 	 * @return bool
 	 */
-	protected function get_dependancies_exist() {
+	protected function get_dependencies_exist() {
 		return true;
 	}
 
