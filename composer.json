@@ -1,5 +1,5 @@
 {
-  "name": "pcfreak30/wordpress-plugin-framework",
+  "name": "pcfreak30/composepress",
   "type": "library",
   "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age",
   "license": "LGPL3",
@@ -16,12 +16,12 @@
   },
   "autoload": {
     "psr-4": {
-      "pcfreak30\\WordPress\\Plugin\\Framework\\": "src/"
+      "pcfreak30\\ComposePress\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "pcfreak30\\WordPress\\Plugin\\Framework\\": "tests/"
+      "pcfreak30\\ComposePress\\": "tests/"
     }
   }
 }

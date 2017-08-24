@@ -1,6 +1,6 @@
 <?php
 
-use pcfreak30\WordPress\Plugin\Framework\BaseObjectMock;
+use pcfreak30\ComposePress\BaseObjectMock;
 
 class BaseObjectTest extends PHPUnit_Framework_TestCase {
 	public function test_getter() {

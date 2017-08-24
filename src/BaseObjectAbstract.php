@@ -1,9 +1,9 @@
 <?php
 
-namespace pcfreak30\WordPress\Plugin\Framework;
+namespace pcfreak30\ComposePress;
 
-use pcfreak30\WordPress\Plugin\Framework\Exception\InexistentProperty;
-use pcfreak30\WordPress\Plugin\Framework\Exception\ReadOnly;
+use pcfreak30\ComposePress\Exception\InexistentProperty;
+use pcfreak30\ComposePress\Exception\ReadOnly;
 
 /**
  * Class BaseObjectAbstract

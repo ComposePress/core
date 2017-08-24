@@ -1,11 +1,11 @@
 <?php
 
-namespace pcfreak30\WordPress\Plugin\Framework;
+namespace pcfreak30\ComposePress;
 
 /**
  * Class BaseObjectMock
  *
- * @package pcfreak30\WordPress\Plugin\Framework
+ * @package pcfreak30\ComposePress
  * @property string $test
  */
 class BaseObjectMock extends BaseObjectAbstract {

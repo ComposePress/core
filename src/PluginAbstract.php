@@ -1,6 +1,6 @@
 <?php
 
-namespace pcfreak30\WordPress\Plugin\Framework;
+namespace pcfreak30\ComposePress;
 
 use Dice\Dice;
 use pcfreak30\WordPress\Plugin\Framework\Exception\ComposerMissing;

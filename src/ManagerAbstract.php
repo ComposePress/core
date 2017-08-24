@@ -1,7 +1,7 @@
 <?php
 
 
-namespace pcfreak30\WordPress\Plugin\Framework;
+namespace pcfreak30\ComposePress;
 
 class ManagerAbstract extends ComponentAbstract {
 	protected $modules = [];
