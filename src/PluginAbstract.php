@@ -48,7 +48,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 	/**
 	 *
 	 */
-	private function find_plugin_file() {
+	protected function find_plugin_file() {
 		$dir  = dirname( ( new \ReflectionClass( $this ) )->getFileName() );
 		$file = null;
 		do {
