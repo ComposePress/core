@@ -24,6 +24,10 @@ abstract class BaseObjectAbstract implements ComponentInterface {
 		if ( method_exists( $this, $func ) ) {
 			return $this->$func();
 		}
+		$func = "is_{$name}";
+		if ( method_exists( $this, $func ) ) {
+			return $this->$func();
+		}
 
 		if ( isset( $GLOBALS[ $name ] ) ) {
 			return $GLOBALS[ $name ];
@@ -43,6 +47,10 @@ abstract class BaseObjectAbstract implements ComponentInterface {
 		if ( method_exists( $this, $func ) ) {
 			throw new ReadOnly( sprintf( 'Property %s is read-only', $name ) );
 		}
+		$func = "is_{$name}";
+		if ( method_exists( $this, $func ) ) {
+			throw new ReadOnly( sprintf( 'Property %s is read-only', $name ) );
+		}
 		if ( isset( $GLOBALS[ $name ] ) ) {
 			$GLOBALS[ $name ] = $value;
 
@@ -53,6 +61,10 @@ abstract class BaseObjectAbstract implements ComponentInterface {
 
 	public function __isset( $name ) {
 		$func = "get_{$name}";
+		if ( method_exists( $this, $func ) ) {
+			return true;
+		}
+		$func = "is_{$name}";
 		if ( method_exists( $this, $func ) ) {
 			return true;
 		}
