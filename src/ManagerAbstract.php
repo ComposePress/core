@@ -6,6 +6,8 @@ namespace pcfreak30\ComposePress;
 class ManagerAbstract extends ComponentAbstract {
 	protected $modules = [];
 
+	const MODULE_NAMESPACE = '';
+
 	/**
 	 *
 	 */
@@ -17,7 +19,11 @@ class ManagerAbstract extends ComponentAbstract {
 
 		$reflect   = new \ReflectionClass( get_called_class() );
 		$class     = strtolower( $reflect->getShortName() );
-		$namespace = $reflect->getNamespaceName();
+		$namespace = static::MODULE_NAMESPACE;
+		if ( empty( $namespace ) ) {
+			$namespace = $reflect->getNamespaceName();
+		}
+
 		$component = strtolower( basename( $namespace ) );
 
 		$slug         = $this->plugin->get_safe_slug();
