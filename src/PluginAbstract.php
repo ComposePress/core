@@ -54,7 +54,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 		do {
 			$last_dir = $dir;
 			$dir      = dirname( $dir );
-			$file     = $dir . DIRECTORY_SEPARATOR . static::PLUGIN_SLUG . '.php';
+			$file     = $dir . DIRECTORY_SEPARATOR . $this->plugin->get_slug() . '.php';
 		} while ( ! $this->get_wp_filesystem()->is_file( $file ) && $dir !== $last_dir );
 		$this->plugin_file = $file;
 	}
