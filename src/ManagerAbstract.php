@@ -24,7 +24,7 @@ class ManagerAbstract extends ComponentAbstract {
 			$namespace = $reflect->getNamespaceName();
 		}
 
-		$component = strtolower( basename( $namespace ) );
+		$component = strtolower( basename( str_replace( '\\', '/', $namespace ) ) );
 
 		$slug         = $this->plugin->get_safe_slug();
 		$filter       = "{$slug}_{$component}_{$class}_modules";
