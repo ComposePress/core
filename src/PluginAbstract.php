@@ -37,6 +37,13 @@ abstract class PluginAbstract extends ComponentAbstract {
 	protected $container;
 
 	/**
+	 * Dependency Container
+	 *
+	 * @var \WP_Filesystem_Direct
+	 */
+	protected $wp_filesystem;
+
+	/**
 	 * PluginAbstract constructor.
 	 */
 	public function __construct() {
@@ -65,9 +72,9 @@ abstract class PluginAbstract extends ComponentAbstract {
 	protected function get_wp_filesystem() {
 		/** @var \WP_Filesystem_Direct $wp_filesystem */
 		global $wp_filesystem;
-		if ( is_null( $wp_filesystem ) ) {
+		if ( null === $this->wp_filesystem ) {
 			require_once ABSPATH . '/wp-admin/includes/file.php';
-			WP_Filesystem();
+			$this->wp_filesystem = new \WP_Filesystem_Direct( null );
 		}
 
 		return $wp_filesystem;
