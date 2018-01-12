@@ -73,12 +73,17 @@ abstract class Plugin extends Component {
 	/**
 	 * @return \WP_Filesystem_Direct
 	 */
-	protected function get_wp_filesystem() {
+	protected function get_wp_filesystem( $args = [] ) {
 		/** @var \WP_Filesystem_Direct $wp_filesystem */
 		global $wp_filesystem;
+		$original_wp_filesystem = $wp_filesystem;
 		if ( null === $this->wp_filesystem ) {
 			require_once ABSPATH . '/wp-admin/includes/file.php';
-			$this->wp_filesystem = new \WP_Filesystem_Direct( null );
+			add_filter( 'filesystem_method', [ $this, 'filesystem_method_override' ] );
+			WP_Filesystem( $args );
+			remove_filter( 'filesystem_method', [ $this, 'filesystem_method_override' ] );
+			$this->wp_filesystem = $wp_filesystem;
+			$wp_filesystem       = $original_wp_filesystem;
 		}
 
 		return $wp_filesystem;
@@ -180,5 +185,9 @@ abstract class Plugin extends Component {
 		}
 
 		return $info;
+	}
+
+	protected function filesystem_method_override() {
+		return 'direct';
 	}
 }
