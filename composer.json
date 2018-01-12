@@ -9,7 +9,9 @@
       "email": "derrick@derrickhammer.com"
     }
   ],
-  "require": {},
+  "require": {
+    "level-2/dice": "dev-v2.0-PHP5.4-5.5"
+  },
   "autoload": {
     "psr-4": {
       "pcfreak30\\ComposePress\\": "src/"
