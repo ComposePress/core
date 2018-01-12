@@ -1,11 +1,22 @@
 <?php
 
 
-namespace pcfreak30\ComposePress;
+namespace pcfreak30\ComposePress\Abstracts;
 
-class ManagerAbstract extends ComponentAbstract {
+/**
+ * Class Manager
+ *
+ * @package pcfreak30\ComposePress\Abstracts
+ */
+class Manager extends Component {
+	/**
+	 * @var array
+	 */
 	protected $modules = [];
 
+	/**
+	 *
+	 */
 	const MODULE_NAMESPACE = '';
 
 	/**

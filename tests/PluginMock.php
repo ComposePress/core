@@ -1,8 +1,8 @@
 <?php
 
-namespace pcfreak30\ComposePress;
+namespace pcfreak30\ComposePress\Abstracts;
 
-class PluginMock extends PluginAbstract {
+class PluginMock extends Plugin {
 
 	const PLUGIN_SLUG = 'test-plugin';
 

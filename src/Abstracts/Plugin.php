@@ -1,6 +1,6 @@
 <?php
 
-namespace pcfreak30\ComposePress;
+namespace pcfreak30\ComposePress\Abstracts;
 
 use Dice\Dice;
 use pcfreak30\ComposePress\Exception\ContainerInvalid;
@@ -9,11 +9,11 @@ use pcfreak30\ComposePress\Exception\ContainerNotExists;
 /**
  * Class PluginAbstract
  *
- * @package pcfreak30\WordPress\Plugin\Framework
+ * @package pcfreak30\WordPress\Plugin\Framework\Abstracts
  *
  * @property Dice\Dice $container
  */
-abstract class PluginAbstract extends ComponentAbstract {
+abstract class Plugin extends Component {
 	/**
 	 * Default version constant
 	 */
@@ -111,8 +111,8 @@ abstract class PluginAbstract extends ComponentAbstract {
 
 
 	/**
-	 * @throws Exception\ContainerInvalid
-	 * @throws Exception\ContainerNotExists
+	 * @throws \pcfreak30\ComposePress\Exception\ContainerInvalid
+	 * @throws \pcfreak30\ComposePress\Exception\ContainerNotExists
 	 */
 	protected function set_container() {
 		$slug      = str_replace( '-', '_', static::PLUGIN_SLUG );

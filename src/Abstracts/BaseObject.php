@@ -1,14 +1,15 @@
 <?php
 
-namespace pcfreak30\ComposePress;
+namespace pcfreak30\ComposePress\Abstracts;
 
+use pcfreak30\ComposePress\ComponentInterface;
 use pcfreak30\ComposePress\Exception\InexistentProperty;
 use pcfreak30\ComposePress\Exception\ReadOnly;
 
 /**
  * Class BaseObjectAbstract
  *
- * @package pcfreak30\WordPress\Plugin\Framework
+ * @package pcfreak30\WordPress\Plugin\Framework\Abstracts
  * @property \wpdb       $wpdb
  * @property \WP_Post    $post
  * @property \WP_Rewrite $wp_rewrite
@@ -18,7 +19,12 @@ use pcfreak30\ComposePress\Exception\ReadOnly;
  * @property string      $pagenow
  * @property int         $page
  */
-abstract class BaseObjectAbstract implements ComponentInterface {
+abstract class BaseObject implements ComponentInterface {
+	/**
+	 * @param $name
+	 *
+	 * @return bool|mixed
+	 */
 	public function __get( $name ) {
 		$func = "get_{$name}";
 		if ( method_exists( $this, $func ) ) {
@@ -36,6 +42,13 @@ abstract class BaseObjectAbstract implements ComponentInterface {
 		return false;
 	}
 
+	/**
+	 * @param $name
+	 * @param $value
+	 *
+	 * @throws \pcfreak30\ComposePress\Exception\InexistentProperty
+	 * @throws \pcfreak30\ComposePress\Exception\ReadOnly
+	 */
 	public function __set( $name, $value ) {
 		$func = "set_{$name}";
 		if ( method_exists( $this, $func ) ) {
@@ -59,6 +72,11 @@ abstract class BaseObjectAbstract implements ComponentInterface {
 		throw new InexistentProperty( sprintf( 'Inexistent property: %s', $name ) );
 	}
 
+	/**
+	 * @param $name
+	 *
+	 * @return bool
+	 */
 	public function __isset( $name ) {
 		$func = "get_{$name}";
 		if ( method_exists( $this, $func ) ) {

@@ -1,8 +1,8 @@
 <?php
 
-namespace pcfreak30\ComposePress;
+namespace pcfreak30\ComposePress\Abstracts;
 
-class ComponentMock extends ComponentAbstract {
+class ComponentMock extends Component {
 
 	private $child;
 	private $child2;
@@ -20,7 +20,7 @@ class ComponentMock extends ComponentAbstract {
 	}
 
 	/**
-	 * @return \ComponentChildMock
+	 * @return ComponentChildMock
 	 */
 	public function get_child() {
 		return $this->child;

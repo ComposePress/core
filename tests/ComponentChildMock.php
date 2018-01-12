@@ -1,8 +1,8 @@
 <?php
 
-namespace pcfreak30\ComposePress;
+namespace pcfreak30\ComposePress\Abstracts;
 
-class ComponentChildMock extends ComponentAbstract {
+class ComponentChildMock extends Component {
 	/**
 	 *
 	 */

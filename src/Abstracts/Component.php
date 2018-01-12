@@ -1,24 +1,24 @@
 <?php
 
 
-namespace pcfreak30\ComposePress;
+namespace pcfreak30\ComposePress\Abstracts;
 
 
 /**
- * Class ComponentAbstract
+ * Class Component
  *
- * @package pcfreak30\WordPress\Plugin\Framework/*
- * @property PluginAbstract    $plugin
- * @property ComponentAbstract $parent
+ * @package pcfreak30\ComposePress\Abstracts
+ * @property Plugin    $plugin
+ * @property Component $parent
  */
-abstract class ComponentAbstract extends BaseObjectAbstract {
+abstract class Component extends BaseObject {
 	/**
-	 * @var PluginAbstract
+	 * @var Plugin
 	 */
 	private $plugin;
 
 	/**
-	 * @var ComponentAbstract
+	 * @var Component
 	 */
 	private $parent;
 
@@ -36,21 +36,21 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 	}
 
 	/**
-	 * @return ComponentAbstract
+	 * @return Component
 	 */
 	public function get_parent() {
 		return $this->parent;
 	}
 
 	/**
-	 * @param ComponentAbstract $parent
+	 * @param Component $parent
 	 */
 	public function set_parent( $parent ) {
 		$this->parent = $parent;
 	}
 
 	/**
-	 * @return PluginAbstract
+	 * @return Plugin
 	 */
 	public function get_plugin() {
 		if ( null === $this->plugin ) {
@@ -61,7 +61,7 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 			$this->plugin = $parent;
 		}
 
-		if ( $this->plugin === $this && ! ( $this instanceof PluginAbstract ) ) {
+		if ( $this->plugin === $this && ! ( $this instanceof Plugin ) ) {
 			throw new \Exception( 'Plugin property is equal to self. Did you forget to set the parent or create a getter?' );
 		}
 
@@ -101,13 +101,13 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 			function ( $component ) {
 				$getter = 'get_' . $component->name;
 
-				return method_exists( $this, $getter ) && ( new \ReflectionMethod( $this, $getter ) )->isPublic() && $this->$getter() instanceof ComponentAbstract;
+				return method_exists( $this, $getter ) && ( new \ReflectionMethod( $this, $getter ) )->isPublic() && $this->$getter() instanceof Component;
 			} );
 		$components = array_map(
 		/**
 		 * @param \ReflectionProperty $component
 		 *
-		 * @return ComponentAbstract
+		 * @return Component
 		 */
 			function ( $component ) {
 				$getter = 'get_' . $component->name;
@@ -122,7 +122,7 @@ abstract class ComponentAbstract extends BaseObjectAbstract {
 	 * @param $components
 	 */
 	protected function set_component_parents( $components ) {
-		/** @var ComponentAbstract $component */
+		/** @var Component $component */
 		foreach ( $components as $component ) {
 			$component->parent = $this;
 		}
