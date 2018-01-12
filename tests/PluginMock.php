@@ -1,6 +1,8 @@
 <?php
 
-namespace pcfreak30\ComposePress\Abstracts;
+namespace pcfreak30\ComposePress;
+
+use pcfreak30\ComposePress\Abstracts\Plugin;
 
 class PluginMock extends Plugin {
 

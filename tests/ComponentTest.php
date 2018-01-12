@@ -1,7 +1,7 @@
 <?php
 
 
-use pcfreak30\ComposePress\Abstracts\ComponentMock;
+use pcfreak30\ComposePress\ComponentMock;
 
 class ComponentTest extends PHPUnit_Framework_TestCase {
 	public function test_child_component_null() {
