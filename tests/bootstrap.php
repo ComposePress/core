@@ -15,6 +15,7 @@ if ( ! class_exists( '\PHPUnit_Framework_TestCase' ) && class_exists( '\PHPUnit\
 WP_Mock::bootstrap();
 require_once ABSPATH . 'wp-includes/class-wp-error.php';
 if ( ! function_exists( '__' ) ) {
+	require_once ABSPATH . WPINC . '/pomo/mo.php';
 	require_once ABSPATH . WPINC . '/l10n.php';
 	require_once ABSPATH . WPINC . '/class-wp-locale.php';
 }
