@@ -14,7 +14,7 @@ if ( ! class_exists( '\PHPUnit_Framework_TestCase' ) && class_exists( '\PHPUnit\
 }
 WP_Mock::bootstrap();
 require_once ABSPATH . 'wp-includes/class-wp-error.php';
-require_once ABSPATH . WPINC . '/l10n.php';
+//require_once ABSPATH . WPINC . '/l10n.php';
 require_once ABSPATH . WPINC . '/class-wp-locale.php';
 /**
  * @param $string
