@@ -84,4 +84,5 @@ function remove_filter( $tag, $function_to_remove, $priority = 10 ) {
 
 }
 
+wp_load_translations_early();
 wp_set_lang_dir();
