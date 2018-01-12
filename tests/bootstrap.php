@@ -3,6 +3,7 @@
  *
  */
 define( 'ABSPATH', '/tmp/wordpress/' );
+define( 'WPINC', 'wp-includes' );
 // Initialize composer
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 if ( ! class_exists( '\PHPUnit_Framework_TestCase' ) && class_exists( '\PHPUnit\Framework\TestCase' ) ) {
@@ -13,6 +14,8 @@ if ( ! class_exists( '\PHPUnit_Framework_TestCase' ) && class_exists( '\PHPUnit\
 }
 WP_Mock::bootstrap();
 require_once ABSPATH . 'wp-includes/class-wp-error.php';
+require_once ABSPATH . WPINC . '/l10n.php';
+require_once ABSPATH . WPINC . '/class-wp-locale.php';
 /**
  * @param $string
  *
@@ -83,6 +86,4 @@ function is_wp_error( $thing ) {
 function remove_filter( $tag, $function_to_remove, $priority = 10 ) {
 
 }
-
-wp_load_translations_early();
 wp_set_lang_dir();
