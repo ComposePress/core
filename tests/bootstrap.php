@@ -32,40 +32,6 @@ function untrailingslashit( $string ) {
 	return rtrim( $string, '/\\' );
 }
 
-/**
- *
- */
-function wp_set_lang_dir() {
-	if ( ! defined( 'WP_LANG_DIR' ) ) {
-		if ( file_exists( WP_CONTENT_DIR . '/languages' ) && @is_dir( WP_CONTENT_DIR . '/languages' ) || ! @is_dir( ABSPATH . WPINC . '/languages' ) ) {
-			/**
-			 * Server path of the language directory.
-			 *
-			 * No leading slash, no trailing slash, full path, not relative to ABSPATH
-			 *
-			 * @since 2.1.0
-			 */
-			define( 'WP_LANG_DIR', WP_CONTENT_DIR . '/languages' );
-			if ( ! defined( 'LANGDIR' ) ) {
-				// Old static relative path maintained for limited backward compatibility - won't work in some cases.
-				define( 'LANGDIR', 'wp-content/languages' );
-			}
-		} else {
-			/**
-			 * Server path of the language directory.
-			 *
-			 * No leading slash, no trailing slash, full path, not relative to `ABSPATH`.
-			 *
-			 * @since 2.1.0
-			 */
-			define( 'WP_LANG_DIR', ABSPATH . WPINC . '/languages' );
-			if ( ! defined( 'LANGDIR' ) ) {
-				// Old relative path maintained for backward compatibility.
-				define( 'LANGDIR', WPINC . '/languages' );
-			}
-		}
-	}
-}
 
 /**
  * @param $thing
@@ -86,4 +52,3 @@ function remove_filter( $tag, $function_to_remove, $priority = 10 ) {
 }
 
 wp_load_translations_early();
-wp_set_lang_dir();
