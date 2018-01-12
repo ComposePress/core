@@ -86,7 +86,7 @@ abstract class Plugin extends Component {
 			$wp_filesystem       = $original_wp_filesystem;
 		}
 
-		return $wp_filesystem;
+		return $this->wp_filesystem;
 	}
 
 	/**
