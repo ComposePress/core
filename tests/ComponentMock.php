@@ -20,7 +20,7 @@ class ComponentMock extends Component {
 	}
 
 	/**
-	 * @return ComponentChildMock
+	 * @return \pcfreak30\ComposePress\ComponentChildMock
 	 */
 	public function get_child() {
 		return $this->child;
