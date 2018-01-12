@@ -51,4 +51,8 @@ function is_wp_error( $thing ) {
 	return ( $thing instanceof WP_Error );
 }
 
+function remove_filter( $tag, $function_to_remove, $priority = 10 ) {
+
+}
+
 wp_set_lang_dir();
