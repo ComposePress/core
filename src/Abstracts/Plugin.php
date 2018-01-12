@@ -11,7 +11,11 @@ use pcfreak30\ComposePress\Exception\ContainerNotExists;
  *
  * @package pcfreak30\WordPress\Plugin\Framework\Abstracts
  *
- * @property Dice\Dice $container
+ * @property \Dice\Dice            $container
+ * @property string                $slug
+ * @property string                $safe_slug
+ * @property string                $plugin_info
+ * @property \WP_Filesystem_Direct $wp_filesystem
  */
 abstract class Plugin extends Component {
 	/**
