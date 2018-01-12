@@ -34,15 +34,6 @@ function untrailingslashit( $string ) {
 
 
 /**
- * @param $thing
- *
- * @return bool
- */
-function is_wp_error( $thing ) {
-	return ( $thing instanceof WP_Error );
-}
-
-/**
  * @param     $tag
  * @param     $function_to_remove
  * @param int $priority
