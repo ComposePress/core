@@ -3,7 +3,6 @@
  *
  */
 define( 'ABSPATH', '/tmp/wordpress/' );
-define( 'WPINC', 'wp-includes' );
 // Initialize composer
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 if ( ! class_exists( '\PHPUnit_Framework_TestCase' ) && class_exists( '\PHPUnit\Framework\TestCase' ) ) {
