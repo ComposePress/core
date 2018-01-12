@@ -27,9 +27,12 @@ before_script:
     if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then
       composer require "phpunit/phpunit=^6.0.0"
       composer require "10up/wp_mock=0.3.*@dev"
+    elsif [[ ${TRAVIS_PHP_VERSION:0:3} == "5.6" ]]; then
+          composer require "phpunit/phpunit=5.6.*"
+          composer require "10up/wp_mock" "*"
     else
-      composer require "phpunit/phpunit=5.6.*"
-      composer require "10up/wp_mock=0.2.*@dev"
+      composer require "phpunit/phpunit=4.*"
+      composer require "10up/wp_mock" "*"
     fi
     composer require "phpunit/phpcov"
     composer require "codeclimate/php-test-reporter"
