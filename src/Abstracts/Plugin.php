@@ -74,7 +74,7 @@ abstract class Plugin extends Component {
 	/**
 	 * @return \WP_Filesystem_Direct
 	 */
-	protected function get_wp_filesystem( $args = [] ) {
+	public function get_wp_filesystem( $args = [] ) {
 		/** @var \WP_Filesystem_Direct $wp_filesystem */
 		global $wp_filesystem;
 		$original_wp_filesystem = $wp_filesystem;
