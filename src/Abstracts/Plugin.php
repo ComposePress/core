@@ -14,7 +14,8 @@ use pcfreak30\ComposePress\Exception\ContainerNotExists;
  * @property \Dice\Dice            $container
  * @property string                $slug
  * @property string                $safe_slug
- * @property string                $plugin_info
+ * @property array                 $plugin_info
+ * @property string                $plugin_file
  * @property \WP_Filesystem_Direct $wp_filesystem
  */
 abstract class Plugin extends Component {
