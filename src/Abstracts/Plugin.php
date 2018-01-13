@@ -188,7 +188,7 @@ abstract class Plugin extends Component {
 		return $info;
 	}
 
-	protected function filesystem_method_override() {
+	public function filesystem_method_override() {
 		return 'direct';
 	}
 }
