@@ -1,7 +1,7 @@
 <?php
 
 
-use pcfreak30\ComposePress\PluginMock;
+use ComposePress\Core\PluginMock;
 
 class PluginTest extends PHPUnit_Framework_TestCase {
 	public function test_get_slug() {

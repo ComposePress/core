@@ -1,7 +1,7 @@
 <?php
 
 
-namespace pcfreak30\ComposePress;
+namespace ComposePress\Core;
 
 
 interface ComponentInterface {

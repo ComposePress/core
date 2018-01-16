@@ -1,7 +1,7 @@
 <?php
 
 
-use pcfreak30\ComposePress\ComponentMock;
+use ComposePress\Core\ComponentMock;
 
 class ComponentTest extends PHPUnit_Framework_TestCase {
 	public function test_child_component_null() {
@@ -12,14 +12,14 @@ class ComponentTest extends PHPUnit_Framework_TestCase {
 		}
 		$component = new ComponentMock();
 		$this->assertNull( $component->child->parent );
-		$this->assertInstanceOf( '\pcfreak30\ComposePress\Abstracts\Component', $component->child->plugin );
+		$this->assertInstanceOf( '\ComposePress\Core\Abstracts\Component', $component->child->plugin );
 	}
 
 	public function test_child_component() {
 		$component = new ComponentMock();
 		$component->init();
-		$this->assertInstanceOf( '\pcfreak30\ComposePress\Abstracts\Component', $component->child->parent );
-		$this->assertInstanceOf( '\pcfreak30\ComposePress\Abstracts\Component', $component->child->plugin );
+		$this->assertInstanceOf( '\ComposePress\Core\Abstracts\Component', $component->child->parent );
+		$this->assertInstanceOf( '\ComposePress\Core\Abstracts\Component', $component->child->plugin );
 	}
 
 	public function test_child_component_no_getter() {

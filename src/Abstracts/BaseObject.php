@@ -1,15 +1,15 @@
 <?php
 
-namespace pcfreak30\ComposePress\Abstracts;
+namespace ComposePress\Core\Abstracts;
 
-use pcfreak30\ComposePress\ComponentInterface;
-use pcfreak30\ComposePress\Exception\InexistentProperty;
-use pcfreak30\ComposePress\Exception\ReadOnly;
+use ComposePress\Core\ComponentInterface;
+use ComposePress\Core\Exception\InexistentProperty;
+use ComposePress\Core\Exception\ReadOnly;
 
 /**
  * Class BaseObjectAbstract
  *
- * @package pcfreak30\WordPress\Plugin\Framework\Abstracts
+ * @package ComposePress\Core\Abstracts
  * @property \wpdb       $wpdb
  * @property \WP_Post    $post
  * @property \WP_Rewrite $wp_rewrite
@@ -46,8 +46,8 @@ abstract class BaseObject implements ComponentInterface {
 	 * @param $name
 	 * @param $value
 	 *
-	 * @throws \pcfreak30\ComposePress\Exception\InexistentProperty
-	 * @throws \pcfreak30\ComposePress\Exception\ReadOnly
+	 * @throws \ComposePress\Core\Exception\InexistentProperty
+	 * @throws \ComposePress\Core\Exception\ReadOnly
 	 */
 	public function __set( $name, $value ) {
 		$func = "set_{$name}";

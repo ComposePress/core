@@ -1,13 +1,13 @@
 <?php
 
 
-namespace pcfreak30\ComposePress\Abstracts;
+namespace ComposePress\Core\Abstracts;
 
 
 /**
  * Class Component
  *
- * @package pcfreak30\ComposePress\Abstracts
+ * @package ComposePress\Core\Abstracts
  * @property Plugin    $plugin
  * @property Component $parent
  */

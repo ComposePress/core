@@ -1,7 +1,7 @@
 <?php
 
 
-namespace pcfreak30\ComposePress\Exception;
+namespace ComposePress\Core\Exception;
 
 
 class ContainerInvalid extends \Exception {

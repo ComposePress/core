@@ -1,8 +1,8 @@
 <?php
 
-namespace pcfreak30\ComposePress;
+namespace ComposePress\Core;
 
-use pcfreak30\ComposePress\Abstracts\Component;
+use ComposePress\Core\Abstracts\Component;
 
 class ComponentMock extends Component {
 
@@ -22,7 +22,7 @@ class ComponentMock extends Component {
 	}
 
 	/**
-	 * @return \pcfreak30\ComposePress\ComponentChildMock
+	 * @return \ComposePress\Core\ComponentChildMock
 	 */
 	public function get_child() {
 		return $this->child;

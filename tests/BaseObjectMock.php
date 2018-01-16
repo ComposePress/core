@@ -1,13 +1,13 @@
 <?php
 
-namespace pcfreak30\ComposePress;
+namespace ComposePress\Core;
 
-use pcfreak30\ComposePress\Abstracts\BaseObject;
+use ComposePress\Core\Abstracts\BaseObject;
 
 /**
  * Class BaseObjectMock
  *
- * @package pcfreak30\ComposePress\Abstracts
+ * @package ComposePress\Core\Abstracts
  * @property string $test
  */
 class BaseObjectMock extends BaseObject {

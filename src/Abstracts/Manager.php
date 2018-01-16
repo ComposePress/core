@@ -1,12 +1,12 @@
 <?php
 
 
-namespace pcfreak30\ComposePress\Abstracts;
+namespace ComposePress\Core\Abstracts;
 
 /**
  * Class Manager
  *
- * @package pcfreak30\ComposePress\Abstracts
+ * @package ComposePress\Core\Abstracts
  */
 class Manager extends Component {
 	/**
