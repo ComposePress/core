@@ -37,7 +37,7 @@ class Manager extends Component {
 
 		$component = strtolower( basename( str_replace( '\\', '/', $namespace ) ) );
 
-		$slug         = $this->plugin->get_safe_slug();
+		$slug         = $this->plugin->safe_slug;
 		$filter       = "{$slug}_{$component}_{$class}_modules";
 		$modules_list = apply_filters( $filter, $this->modules );
 
