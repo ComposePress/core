@@ -90,7 +90,27 @@ trait Component {
 			function ( $component ) {
 				$getter = 'get_' . $component->name;
 
-				return method_exists( $this, $getter ) && ( new \ReflectionMethod( $this, $getter ) )->isPublic() && $this->$getter() instanceof Component;
+				if ( ! ( method_exists( $this, $getter ) && ( new \ReflectionMethod( $this, $getter ) )->isPublic() ) ) {
+					return false;
+				}
+
+				$property = $this->$getter();
+
+				if ( ! is_object( $property ) ) {
+					return false;
+				}
+
+				$trait = __TRAIT__;
+				$used  = class_uses( $property );
+				if ( ! isset( $used[ $trait ] ) ) {
+					$parents = class_parents( $property );
+					while ( ! isset( $used[ $trait ] ) && $parents ) {
+						//get trait used by parents
+						$used = class_uses( array_pop( $parents ) );
+					}
+				}
+
+				return isset( array_flip( $used )[ $trait ] );
 			} );
 		$components = array_map(
 		/**
