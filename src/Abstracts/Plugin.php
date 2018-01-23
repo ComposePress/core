@@ -191,4 +191,12 @@ abstract class Plugin extends Component {
 	public function filesystem_method_override() {
 		return 'direct';
 	}
+
+	public function get_asset_url( $file ) {
+		if ( $this->get_wp_filesystem()->is_file( $file ) ) {
+			$file = str_replace( plugin_dir_path( $this->plugin_file ), '', $file );
+		}
+
+		return plugins_url( $file, __FILE__ );
+	}
 }
