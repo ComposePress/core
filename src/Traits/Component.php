@@ -71,7 +71,9 @@ trait Component {
 		$this->set_component_parents( $components );
 		/** @var \ComposePress\Core\Abstracts\Component[] $components */
 		foreach ( $components as $component ) {
-			$component->init();
+			if ( method_exists( $component, 'init' ) ) {
+				$component->init();
+			}
 		}
 	}
 
