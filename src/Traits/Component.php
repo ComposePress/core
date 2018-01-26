@@ -5,6 +5,7 @@ namespace ComposePress\Core\Traits;
 use ComposePress\Core\Abstracts\Plugin;
 
 trait Component {
+	use BaseObject;
 	/**
 	 * @var Plugin
 	 */

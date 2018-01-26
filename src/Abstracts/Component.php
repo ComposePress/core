@@ -3,6 +3,8 @@
 
 namespace ComposePress\Core\Abstracts;
 
+use ComposePress\Core\ComponentInterface;
+
 
 /**
  * Class Component
@@ -11,6 +13,6 @@ namespace ComposePress\Core\Abstracts;
  * @property Plugin    $plugin
  * @property Component $parent
  */
-abstract class Component extends BaseObject {
+abstract class Component implements ComponentInterface {
 	use \ComposePress\Core\Traits\Component;
 }
