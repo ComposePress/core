@@ -26,7 +26,6 @@ class Manager extends Component {
 		if ( 0 < count( array_filter( $this->modules, 'is_object' ) ) ) {
 			return;
 		}
-		$modules = [];
 
 		$reflect   = new \ReflectionClass( get_called_class() );
 		$class     = strtolower( $reflect->getShortName() );
@@ -41,19 +40,19 @@ class Manager extends Component {
 		$filter       = "{$slug}_{$component}_{$class}_modules";
 		$modules_list = apply_filters( $filter, $this->modules );
 
+		$this->modules = [];
+
 		foreach ( $modules_list as $module ) {
 			$class = trim( $module, '\\' );
 			if ( false === strpos( $module, '\\' ) ) {
 				$class = $namespace . '\\' . $module;
 			}
-			$modules[ $module ] = $this->plugin->container->create( $class );
+			$this->modules[ $module ] = $this->plugin->container->create( $class );
 		}
 		foreach ( $modules_list as $module ) {
-			$modules[ $module ]->parent = $this;
-			$modules[ $module ]->init();
+			$this->modules[ $module ]->parent = $this;
+			$this->modules[ $module ]->init();
 		}
-
-		$this->modules = $modules;
 	}
 
 	/**
