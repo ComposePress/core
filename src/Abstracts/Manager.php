@@ -33,8 +33,9 @@ class Manager extends Component {
 		if ( empty( $namespace ) ) {
 			$namespace = $reflect->getNamespaceName();
 		}
-
-		$component = strtolower( basename( str_replace( '\\', '/', $namespace ) ) );
+		
+		$component = explode( '\\', $namespace );
+		$component = strtolower( end( $component ) );
 
 		$slug         = $this->plugin->safe_slug;
 		$filter       = "{$slug}_{$component}_{$class}_modules";
