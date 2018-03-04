@@ -205,6 +205,6 @@ abstract class Plugin extends Component {
 			$file = str_replace( plugin_dir_path( $this->plugin_file ), '', $file );
 		}
 
-		return plugins_url( $file, __FILE__ );
+		return plugins_url( $file, ( new \ReflectionClass( get_called_class() ) )->getFileName() );
 	}
 }
