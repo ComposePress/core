@@ -65,9 +65,18 @@ trait Component {
 	}
 
 	/**
+	 * Lazy load components possibly conditionally
+	 */
+	protected function load_components() {
+		// noop
+	}
+
+	/**
 	 * Setup components and run init
 	 */
 	protected function setup_components() {
+		$this->load_components();
+
 		$components = $this->get_components();
 		$this->set_component_parents( $components );
 		/** @var \ComposePress\Core\Abstracts\Component[] $components */
@@ -128,6 +137,24 @@ trait Component {
 			}, $components );
 
 		return $components;
+	}
+
+	protected function load( $component ) {
+		if ( ! property_exists( $this, $component ) ) {
+			return false;
+		}
+
+		$class = $this->$component;
+
+		if ( ! is_string( $class ) ) {
+			return false;
+		}
+		if ( ! class_exists( $class ) ) {
+			throw new \Exception( sprintf( 'Can not find class "%s" for Component "%s" in parent Component "%s"', $class, $component, __CLASS__ ) );
+		}
+		$this->$component = $this->container->create( $class );
+
+		return true;
 	}
 
 	/**
