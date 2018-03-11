@@ -4,6 +4,11 @@ namespace ComposePress\Core\Traits;
 
 use ComposePress\Core\Abstracts\Plugin;
 
+/**
+ * Trait Component
+ *
+ * @package ComposePress\Core\Traits
+ */
 trait Component {
 	use BaseObject;
 	/**
@@ -39,6 +44,8 @@ trait Component {
 	}
 
 	/**
+	 * Magical utility method that will walk up the reference chain to get the master Plugin instance and cache it in $plugin
+	 *
 	 * @return Plugin
 	 */
 	public function get_plugin() {
@@ -58,6 +65,8 @@ trait Component {
 	}
 
 	/**
+	 * Return if the current component has a parent or not
+	 *
 	 * @return bool
 	 */
 	public function has_parent() {
@@ -88,6 +97,8 @@ trait Component {
 	}
 
 	/**
+	 * Get all components with a getter and that uses the Component trait
+	 *
 	 * @return array|\ReflectionProperty[]
 	 */
 	protected function get_components() {
@@ -139,6 +150,14 @@ trait Component {
 		return $components;
 	}
 
+	/**
+	 * Load any property on the current component based on its string value as the class via the container
+	 *
+	 * @param $component
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 */
 	protected function load( $component ) {
 		if ( ! property_exists( $this, $component ) ) {
 			return false;
@@ -158,6 +177,8 @@ trait Component {
 	}
 
 	/**
+	 * Set the parent reference for the given components to the current component
+	 *
 	 * @param $components
 	 */
 	protected function set_component_parents( $components ) {
@@ -168,7 +189,7 @@ trait Component {
 	}
 
 	/**
-	 *
+	 * The super init method h magic happens
 	 */
 	abstract public function init();
 
