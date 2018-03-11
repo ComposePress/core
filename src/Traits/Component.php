@@ -158,7 +158,9 @@ trait Component {
 	 * @return bool
 	 * @throws \Exception
 	 */
-	protected function load( $component ) {
+	protected function load( $component, $args = [] ) {
+		$args = (array) $args;
+
 		if ( ! property_exists( $this, $component ) ) {
 			return false;
 		}
@@ -171,7 +173,7 @@ trait Component {
 		if ( ! class_exists( $class ) ) {
 			throw new \Exception( sprintf( 'Can not find class "%s" for Component "%s" in parent Component "%s"', $class, $component, __CLASS__ ) );
 		}
-		$this->$component = $this->container->create( $class );
+		$this->$component = $this->container->create( $class, $args );
 
 		return true;
 	}
