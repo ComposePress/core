@@ -166,6 +166,7 @@ trait Component {
 	}
 
 	protected function is_component( $component ) {
+		static $cache = [];
 
 		if ( ! is_object( $component ) ) {
 			if ( ! is_string( $component ) ) {
@@ -186,6 +187,13 @@ trait Component {
 			return false;
 		}
 
+		$hash = spl_object_hash( $component );
+
+		if ( isset( $cache[ $hash ] ) ) {
+			return $cache[ $hash ];
+		}
+
+
 		$trait = __TRAIT__;
 		$used  = class_uses( $component );
 		if ( ! isset( $used[ $trait ] ) ) {
@@ -196,7 +204,9 @@ trait Component {
 			}
 		}
 
-		return isset( array_flip( $used )[ $trait ] );
+		$cache[ $hash ] = array_flip( $used )[ $trait ];
+
+		return $cache[ $hash ];
 	}
 
 	/**
