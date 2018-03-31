@@ -103,6 +103,15 @@ trait Component {
 	 */
 	protected function get_components() {
 		$components = ( new \ReflectionClass( $this ) )->getProperties();
+		$components = array_map(
+		/**
+		 * @param \ReflectionProperty $property
+		 *
+		 * @return string
+		 */
+			function ( $property ) {
+				return $property->name;
+			}, $components );
 		$components = array_filter( $components, [ $this, 'is_component' ] );
 		$components = array_map(
 		/**
@@ -111,7 +120,7 @@ trait Component {
 		 * @return Component
 		 */
 			function ( $component ) {
-				$getter = 'get_' . $component->name;
+				$getter = "get_{$component}";
 
 				return $this->$getter();
 			}, $components );
