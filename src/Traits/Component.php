@@ -147,6 +147,11 @@ trait Component {
 		return true;
 	}
 
+	/**
+	 * @param string $component
+	 *
+	 * @return bool
+	 */
 	protected function is_loaded( $component ) {
 		if ( ! property_exists( $this, $component ) ) {
 			return false;
@@ -165,6 +170,13 @@ trait Component {
 		return true;
 	}
 
+	/**
+	 * @param string|object $component
+	 * @param bool          $use_cache
+	 *
+	 * @return bool|mixed
+	 * @throws \ReflectionException
+	 */
 	protected function is_component( $component, $use_cache = true ) {
 		static $cache = [];
 
