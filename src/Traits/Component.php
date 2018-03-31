@@ -103,38 +103,7 @@ trait Component {
 	 */
 	protected function get_components() {
 		$components = ( new \ReflectionClass( $this ) )->getProperties();
-		$components = array_filter(
-			$components,
-			/**
-			 * @param \ReflectionProperty $component
-			 *
-			 * @return bool
-			 */
-			function ( $component ) {
-				$getter = 'get_' . $component->name;
-
-				if ( ! ( method_exists( $this, $getter ) && ( new \ReflectionMethod( $this, $getter ) )->isPublic() ) ) {
-					return false;
-				}
-
-				$property = $this->$getter();
-
-				if ( ! is_object( $property ) ) {
-					return false;
-				}
-
-				$trait = __TRAIT__;
-				$used  = class_uses( $property );
-				if ( ! isset( $used[ $trait ] ) ) {
-					$parents = class_parents( $property );
-					while ( ! isset( $used[ $trait ] ) && $parents ) {
-						//get trait used by parents
-						$used = class_uses( array_pop( $parents ) );
-					}
-				}
-
-				return isset( array_flip( $used )[ $trait ] );
-			} );
+		$components = array_filter( $components, [ $this, 'is_component' ] );
 		$components = array_map(
 		/**
 		 * @param \ReflectionProperty $component
@@ -194,6 +163,40 @@ trait Component {
 		}
 
 		return true;
+	}
+
+	protected function is_component( $component ) {
+
+		if ( ! is_object( $component ) ) {
+			if ( ! is_string( $component ) ) {
+				return false;
+			}
+			$getter = 'get_' . $component;
+			if ( ! ( method_exists( $this, $getter ) && ( new \ReflectionMethod( $this, $getter ) )->isPublic() ) ) {
+				return false;
+			}
+			$component = $this->$getter();
+		}
+
+		if ( ! is_object( $component ) ) {
+			return false;
+		}
+
+		if ( $component instanceof \stdClass ) {
+			return false;
+		}
+
+		$trait = __TRAIT__;
+		$used  = class_uses( $component );
+		if ( ! isset( $used[ $trait ] ) ) {
+			$parents = class_parents( $component );
+			while ( ! isset( $used[ $trait ] ) && $parents ) {
+				//get trait used by parents
+				$used = class_uses( array_pop( $parents ) );
+			}
+		}
+
+		return isset( array_flip( $used )[ $trait ] );
 	}
 
 	/**
