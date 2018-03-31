@@ -178,6 +178,24 @@ trait Component {
 		return true;
 	}
 
+	protected function is_loaded( $component ) {
+		if ( ! property_exists( $this, $component ) ) {
+			return false;
+		}
+
+		$property = $this->$component;
+
+		if ( ! is_object( $property ) ) {
+			return false;
+		}
+
+		if ( $property instanceof \stdClass ) {
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * Set the parent reference for the given components to the current component
 	 *
