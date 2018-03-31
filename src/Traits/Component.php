@@ -165,7 +165,7 @@ trait Component {
 		return true;
 	}
 
-	protected function is_component( $component ) {
+	protected function is_component( $component, $use_cache = true ) {
 		static $cache = [];
 
 		if ( ! is_object( $component ) ) {
@@ -189,7 +189,7 @@ trait Component {
 
 		$hash = spl_object_hash( $component );
 
-		if ( isset( $cache[ $hash ] ) ) {
+		if ( $use_cache && isset( $cache[ $hash ] ) ) {
 			return $cache[ $hash ];
 		}
 
