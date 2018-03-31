@@ -216,7 +216,9 @@ trait Component {
 			}
 		}
 
-		$cache[ $hash ] = array_flip( $used )[ $trait ];
+		$used = array_flip( $used );
+
+		$cache[ $hash ] = isset( $used[ $trait ] );
 
 		return $cache[ $hash ];
 	}
