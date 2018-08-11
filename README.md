@@ -1,4 +1,3 @@
-# ComposePress
-A simple PS4 and composer ready plugin framework for the modern wordpress age
+# MOVED
 
-See https://github.com/ComposePress/starter/wiki for documentation
+This project has moved to https://gitlab.com/ComposePress/core
