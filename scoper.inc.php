@@ -7,10 +7,13 @@ use Symfony\Component\Finder\Finder;
 return [
     'finders' => [
         Finder::create()->files()->in(__DIR__ . '/src'),
+        Finder::create()->files()->in(__DIR__ . '/tests/Fixtures'),
     ],
     'exclude-functions' => [
         'add_action',
         'add_filter',
+        'remove_action',
+        'remove_filter',
         'register_activation_hook',
         'register_deactivation_hook',
         'register_uninstall_hook',

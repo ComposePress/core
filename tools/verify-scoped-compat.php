@@ -7,7 +7,15 @@ require_once __DIR__ . '/../tests/bootstrap.php';
 $prefixes = ['ComposePressCompatA', 'ComposePressCompatB'];
 foreach ($prefixes as $prefix) {
     $directory = strtolower(str_replace('ComposePressCompat', 'compat-', $prefix));
-    $files = glob(__DIR__ . '/../build/' . $directory . '/*.php') ?: [];
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator(__DIR__ . '/../build/' . $directory),
+    );
+    $files = [];
+    foreach ($iterator as $file) {
+        if ($file->isFile() && $file->getExtension() === 'php') {
+            $files[] = $file->getPathname();
+        }
+    }
     sort($files);
     foreach ($files as $file) {
         require_once $file;
@@ -26,33 +34,40 @@ $callback = static function (): void {
 };
 $hooksA->action('composepress_scope_a', $callback);
 $hooksB->filter('composepress_scope_b', $callback);
+$hooksA->removeAction('composepress_scope_a', $callback);
+$hooksB->removeFilter('composepress_scope_b', $callback);
 
 if ($GLOBALS['composepress_test_hooks'] !== [
     ['action', 'composepress_scope_a', 10, 1],
     ['filter', 'composepress_scope_b', 10, 1],
+    ['remove_action', 'composepress_scope_a', 10],
+    ['remove_filter', 'composepress_scope_b', 10],
 ]) {
     throw new RuntimeException('Scoped hook adapters did not call global WordPress functions.');
 }
 
-eval('class CompatAUninstaller implements \\ComposePressCompatA\\ComposePress\\Core\\PluginUninstall { public static function uninstall(): void {} }');
-eval('class CompatBUninstaller implements \\ComposePressCompatB\\ComposePress\\Core\\PluginUninstall { public static function uninstall(): void {} }');
+$uninstallerA = 'ComposePressCompatA\\ComposePress\\Core\\Tests\\Fixtures\\ScopedUninstall';
+$uninstallerB = 'ComposePressCompatB\\ComposePress\\Core\\Tests\\Fixtures\\ScopedUninstall';
+if (!class_exists($uninstallerA) || !class_exists($uninstallerB)) {
+    throw new RuntimeException('Scoped uninstall fixtures were not loaded.');
+}
 
 $pluginA = new ComposePressCompatA\ComposePress\Core\Plugin(
     new ComposePressCompatA\ComposePress\Core\PluginContext('/plugins/a/a.php', 'a', '1.0.0'),
     hooks: $hooksA,
-    uninstaller: CompatAUninstaller::class,
+    uninstaller: $uninstallerA,
 );
 $pluginB = new ComposePressCompatB\ComposePress\Core\Plugin(
     new ComposePressCompatB\ComposePress\Core\PluginContext('/plugins/b/b.php', 'b', '1.0.0'),
     hooks: $hooksB,
-    uninstaller: CompatBUninstaller::class,
+    uninstaller: $uninstallerB,
 );
 $pluginA->boot();
 $pluginB->boot();
 
 $lifecycle = $GLOBALS['composepress_test_lifecycle'];
-if ($lifecycle[0][2] !== [CompatAUninstaller::class, 'uninstall']
-    || $lifecycle[1][2] !== [CompatBUninstaller::class, 'uninstall']) {
+if ($lifecycle[0][2] !== [$uninstallerA, 'uninstall']
+    || $lifecycle[1][2] !== [$uninstallerB, 'uninstall']) {
     throw new RuntimeException('Scoped uninstall callbacks were not preserved.');
 }
 
