@@ -46,10 +46,16 @@ if ($GLOBALS['composepress_test_hooks'] !== [
     throw new RuntimeException('Scoped hook adapters did not call global WordPress functions.');
 }
 
-$uninstallerA = 'ComposePressCompatA\\ComposePress\\Core\\Tests\\Fixtures\\ScopedUninstall';
-$uninstallerB = 'ComposePressCompatB\\ComposePress\\Core\\Tests\\Fixtures\\ScopedUninstall';
-if (!class_exists($uninstallerA) || !class_exists($uninstallerB)) {
-    throw new RuntimeException('Scoped uninstall fixtures were not loaded.');
+$providerA = 'ComposePressCompatA\\ComposePress\\Core\\Tests\\Fixtures\\ScopedUninstallProvider';
+$providerB = 'ComposePressCompatB\\ComposePress\\Core\\Tests\\Fixtures\\ScopedUninstallProvider';
+if (!class_exists($providerA) || !class_exists($providerB)) {
+    throw new RuntimeException('Scoped uninstall providers were not loaded.');
+}
+$uninstallerA = $providerA::className();
+$uninstallerB = $providerB::className();
+if ($uninstallerA !== 'ComposePressCompatA\\ComposePress\\Core\\Tests\\Fixtures\\ScopedUninstall'
+    || $uninstallerB !== 'ComposePressCompatB\\ComposePress\\Core\\Tests\\Fixtures\\ScopedUninstall') {
+    throw new RuntimeException('Scoped uninstall class constants were not rewritten.');
 }
 
 $pluginA = new ComposePressCompatA\ComposePress\Core\Plugin(
