@@ -19,4 +19,14 @@ final class RecordingHooks implements Hooks
     public function filter(string $hook, callable $callback, int $priority = 10, int $arguments = 1): void
     {
     }
+
+    public function removeAction(string $hook, callable $callback, int $priority = 10): bool
+    {
+        return true;
+    }
+
+    public function removeFilter(string $hook, callable $callback, int $priority = 10): bool
+    {
+        return true;
+    }
 }

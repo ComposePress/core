@@ -9,6 +9,21 @@ use PHPUnit\Framework\TestCase;
 
 final class WordPressHooksIntegrationTest extends TestCase
 {
+    public function testRemovedActionDoesNotReachCallback(): void
+    {
+        $received = false;
+        $callback = static function () use (&$received): void {
+            $received = true;
+        };
+        $hooks = new WordPressHooks();
+        $hooks->action('composepress_core_removal_test', $callback);
+
+        self::assertTrue($hooks->removeAction('composepress_core_removal_test', $callback));
+        do_action('composepress_core_removal_test');
+
+        self::assertFalse($received);
+    }
+
     public function testActionReachesRegisteredCallback(): void
     {
         $received = null;
