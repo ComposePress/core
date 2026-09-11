@@ -28,6 +28,8 @@ jobs:
           done
           docker compose -f docker-compose.integration.yml logs
           exit 1
+      - name: Install Subversion
+        run: sudo apt-get update && sudo apt-get install --yes subversion
       - name: Install WordPress test suite
         run: |
           curl -fsSL https://raw.githubusercontent.com/wp-cli/scaffold-command/v2.0.0/templates/install-wp-tests.sh \
