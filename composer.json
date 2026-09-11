@@ -3,6 +3,11 @@
   "type": "library",
   "description": "A small WordPress plugin runtime boundary",
   "license": "LGPL-3.0-or-later",
+  "config": {
+    "platform": {
+      "php": "8.2.0"
+    }
+  },
   "require": {
     "php": ">=8.2"
   },
