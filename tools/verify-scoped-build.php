@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 $buildDirectory = __DIR__ . '/../build';
 $files = glob($buildDirectory . '/*.php') ?: [];
+sort($files);
 
 if ($files === []) {
     fwrite(STDERR, "Scoped build is missing. Run composer scope first.\n");

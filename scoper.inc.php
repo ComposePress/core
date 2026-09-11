@@ -11,6 +11,8 @@ return [
     'exclude-functions' => [
         'add_action',
         'add_filter',
+        'remove_action',
+        'remove_filter',
         'register_activation_hook',
         'register_deactivation_hook',
         'register_uninstall_hook',
