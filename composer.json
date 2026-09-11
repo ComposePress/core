@@ -11,7 +11,8 @@
     "phpstan/phpstan": "^2.2",
     "php-stubs/wordpress-stubs": "^6.4",
     "squizlabs/php_codesniffer": "^3.13",
-    "yoast/phpunit-polyfills": "^4.0"
+    "yoast/phpunit-polyfills": "^4.0",
+    "humbug/php-scoper": "^0.18"
   },
   "autoload": {
     "psr-4": {
@@ -28,6 +29,8 @@
     "test:coverage": "phpunit --coverage-text",
     "test:integration": "phpunit -c phpunit.integration.xml.dist",
     "analyse": "phpstan analyse",
-    "style": "phpcs --standard=.phpcs.xml.dist src tests"
+    "style": "phpcs --standard=.phpcs.xml.dist src tests",
+    "scope": "php vendor/bin/php-scoper add-prefix --config=scoper.inc.php --prefix=ComposePressScoped --output-dir=build --force",
+    "scope:check": "php tools/verify-scoped-build.php"
   }
 }
