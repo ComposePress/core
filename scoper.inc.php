@@ -7,7 +7,6 @@ use Symfony\Component\Finder\Finder;
 return [
     'finders' => [
         Finder::create()->files()->in(__DIR__ . '/src'),
-        Finder::create()->files()->in(__DIR__ . '/tests/Fixtures'),
     ],
     'exclude-functions' => [
         'add_action',

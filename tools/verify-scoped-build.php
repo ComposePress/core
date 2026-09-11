@@ -3,7 +3,14 @@
 declare(strict_types=1);
 
 $buildDirectory = __DIR__ . '/../build';
-$files = glob($buildDirectory . '/*.php') ?: [];
+$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($buildDirectory));
+$files = [];
+foreach ($iterator as $file) {
+    if ($file->isFile() && $file->getExtension() === 'php') {
+        $files[] = $file->getPathname();
+    }
+}
+sort($files);
 
 if ($files === []) {
     fwrite(STDERR, "Scoped build is missing. Run composer scope first.\n");
