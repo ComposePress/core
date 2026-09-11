@@ -15,7 +15,8 @@ final class Plugin
     public function __construct(
         public readonly PluginContext $context,
         private readonly iterable $subscribers = [],
-        private readonly ?PluginLifecycle $lifecycle = null,
+        private readonly ?PluginActivator $activator = null,
+        private readonly ?PluginDeactivator $deactivator = null,
         private readonly ?Hooks $hooks = null,
         private readonly ?string $uninstaller = null,
     ) {
@@ -29,7 +30,7 @@ final class Plugin
 
         $this->bootAttempted = true;
 
-        if ($this->lifecycle !== null || $this->uninstaller !== null) {
+        if ($this->activator !== null || $this->deactivator !== null || $this->uninstaller !== null) {
             if (!function_exists('register_activation_hook')) {
                 throw new \LogicException('WordPress must be loaded before booting lifecycle handlers.');
             }
@@ -56,9 +57,12 @@ final class Plugin
             $subscriber->subscribe($hooks);
         }
 
-        if ($this->lifecycle !== null) {
-            register_activation_hook($this->context->file, [$this->lifecycle, 'activate']);
-            register_deactivation_hook($this->context->file, [$this->lifecycle, 'deactivate']);
+        if ($this->activator !== null) {
+            register_activation_hook($this->context->file, [$this->activator, 'activate']);
+        }
+
+        if ($this->deactivator !== null) {
+            register_deactivation_hook($this->context->file, [$this->deactivator, 'deactivate']);
         }
 
         if ($this->uninstaller !== null) {

@@ -19,8 +19,7 @@ final class PluginTest extends TestCase
         $plugin = new Plugin(
             new PluginContext('/plugins/example/example.php', 'example', '1.0.0'),
             [$subscriber],
-            null,
-            $hooks,
+            hooks: $hooks,
         );
 
         $plugin->boot();
@@ -58,8 +57,7 @@ final class PluginTest extends TestCase
         $plugin = new Plugin(
             new PluginContext('/plugins/example/example.php', 'example', '1.0.0'),
             [$subscriber],
-            null,
-            $hooks,
+            hooks: $hooks,
         );
 
         try {

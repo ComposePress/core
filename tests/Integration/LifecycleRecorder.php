@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace ComposePress\Core\Tests\Integration;
 
-use ComposePress\Core\PluginLifecycle;
+use ComposePress\Core\PluginActivator;
+use ComposePress\Core\PluginDeactivator;
 use ComposePress\Core\PluginUninstall;
 
-final class LifecycleRecorder implements PluginLifecycle, PluginUninstall
+final class LifecycleRecorder implements PluginActivator, PluginDeactivator, PluginUninstall
 {
     /** @var list<string> */
     public static array $events = [];

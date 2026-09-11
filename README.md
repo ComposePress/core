@@ -25,6 +25,17 @@ $plugin->boot();
 
 Subscribers receive their application dependencies through constructors and register only WordPress adapters. Business services do not need to depend on ComposePress.
 
+Lifecycle capabilities are opt-in and independent. Implement `PluginActivator` for activation work and `PluginDeactivator` for deactivation work; uninstall remains a separate static `PluginUninstall` contract. Pass only the capabilities the plugin needs:
+
+```php
+$plugin = new Plugin(
+    context: new PluginContext(__FILE__, 'example-plugin', '1.0.0'),
+    activator: new InstallPlugin($migrator),
+    deactivator: new DisablePlugin($scheduler),
+    uninstaller: UninstallPlugin::class,
+);
+```
+
 ## Development
 
 ```sh
