@@ -8,6 +8,7 @@ use ComposePress\Core\HookSubscriber;
 use ComposePress\Core\Hooks;
 use ComposePress\Core\Plugin;
 use ComposePress\Core\PluginContext;
+use ComposePress\Core\RequirementsNotMet;
 use PHPUnit\Framework\TestCase;
 
 final class PluginTest extends TestCase
@@ -27,6 +28,37 @@ final class PluginTest extends TestCase
         self::assertTrue($plugin->isBooted());
         self::assertSame(1, $subscriber->subscriptions);
         self::assertSame(['example_hook'], $hooks->actions);
+    }
+
+    public function testRequirementsAreReportedAndGateBoot(): void
+    {
+        $requirement = new RecordingRequirement('PHP extension', false, 'PHP extension is missing.');
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '1.0.0'),
+            [new RecordingSubscriber()],
+            requirements: [$requirement],
+        );
+
+        $results = $plugin->checkRequirements();
+
+        self::assertSame('PHP extension', $results[0]->name);
+        self::assertFalse($results[0]->satisfied);
+        self::assertSame('PHP extension is missing.', $results[0]->message);
+
+        $this->expectException(RequirementsNotMet::class);
+        $plugin->boot();
+    }
+
+    public function testSatisfiedRequirementsAllowBoot(): void
+    {
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '1.0.0'),
+            requirements: [new RecordingRequirement('PHP', true, 'PHP requirement satisfied.')],
+        );
+
+        $plugin->boot();
+
+        self::assertTrue($plugin->isBooted());
     }
 
     public function testBootCannotRunTwice(): void

@@ -27,6 +27,15 @@ Subscribers receive their application dependencies through constructors and regi
 
 Lifecycle capabilities are opt-in and independent. Implement `PluginActivator` for activation work and `PluginDeactivator` for deactivation work; uninstall remains a separate static `PluginUninstall` contract. Pass only the capabilities the plugin needs:
 
+Requirements are explicit checks that run before subscribers are registered. Each `PluginRequirement` returns a `RequirementResult`; unmet results are reported through `RequirementsNotMet` instead of silently skipping boot.
+
+```php
+$plugin = new Plugin(
+    context: new PluginContext(__FILE__, 'example-plugin', '1.0.0'),
+    requirements: [new RequiresWooCommerce('8.0')],
+);
+```
+
 ```php
 $plugin = new Plugin(
     context: new PluginContext(__FILE__, 'example-plugin', '1.0.0'),

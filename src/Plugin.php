@@ -11,6 +11,7 @@ final class Plugin
 
     /**
      * @param iterable<HookSubscriber> $subscribers
+     * @param iterable<PluginRequirement> $requirements
      */
     public function __construct(
         public readonly PluginContext $context,
@@ -19,7 +20,29 @@ final class Plugin
         private readonly ?PluginDeactivator $deactivator = null,
         private readonly ?Hooks $hooks = null,
         private readonly ?string $uninstaller = null,
+        private readonly iterable $requirements = [],
     ) {
+    }
+
+    /**
+     * @return list<RequirementResult>
+     */
+    public function checkRequirements(): array
+    {
+        $results = [];
+        foreach ($this->requirements as $requirement) {
+            if (!$requirement instanceof PluginRequirement) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Requirement %s must implement %s.',
+                    get_debug_type($requirement),
+                    PluginRequirement::class,
+                ));
+            }
+
+            $results[] = $requirement->check();
+        }
+
+        return $results;
     }
 
     public function boot(): void
@@ -29,6 +52,14 @@ final class Plugin
         }
 
         $this->bootAttempted = true;
+
+        $failedRequirements = array_values(array_filter(
+            $this->checkRequirements(),
+            static fn (RequirementResult $result): bool => !$result->satisfied,
+        ));
+        if ($failedRequirements !== []) {
+            throw new RequirementsNotMet($failedRequirements);
+        }
 
         if ($this->activator !== null || $this->deactivator !== null || $this->uninstaller !== null) {
             if (!function_exists('register_activation_hook')) {
