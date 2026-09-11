@@ -23,4 +23,22 @@ final class WordPressHooks implements Hooks
 
         add_filter($hook, $callback, $priority, $arguments);
     }
+
+    public function removeAction(string $hook, callable $callback, int $priority = 10): bool
+    {
+        if (!function_exists('remove_action')) {
+            throw new \LogicException('WordPress must be loaded before removing hooks.');
+        }
+
+        return remove_action($hook, $callback, $priority);
+    }
+
+    public function removeFilter(string $hook, callable $callback, int $priority = 10): bool
+    {
+        if (!function_exists('remove_filter')) {
+            throw new \LogicException('WordPress must be loaded before removing hooks.');
+        }
+
+        return remove_filter($hook, $callback, $priority);
+    }
 }

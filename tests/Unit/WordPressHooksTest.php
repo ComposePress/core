@@ -32,6 +32,21 @@ final class WordPressHooksTest extends TestCase
         ], $GLOBALS['composepress_test_hooks']);
     }
 
+    public function testDelegatesHookRemovalToWordPress(): void
+    {
+        $hooks = new WordPressHooks();
+        $callback = static function (): void {
+        };
+
+        self::assertTrue($hooks->removeAction('init', $callback, 15));
+        self::assertTrue($hooks->removeFilter('the_title', $callback, 5));
+
+        self::assertSame([
+            ['remove_action', 'init', 15],
+            ['remove_filter', 'the_title', 5],
+        ], $GLOBALS['composepress_test_hooks']);
+    }
+
     public function testRegistersInstanceLifecycleAndStaticUninstall(): void
     {
         $plugin = new Plugin(

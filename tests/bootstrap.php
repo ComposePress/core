@@ -21,6 +21,18 @@ function add_filter(string $hook, callable $callback, int $priority = 10, int $a
     return true;
 }
 
+function remove_action(string $hook, callable $callback, int $priority = 10): bool
+{
+    $GLOBALS['composepress_test_hooks'][] = ['remove_action', $hook, $priority];
+    return true;
+}
+
+function remove_filter(string $hook, callable $callback, int $priority = 10): bool
+{
+    $GLOBALS['composepress_test_hooks'][] = ['remove_filter', $hook, $priority];
+    return true;
+}
+
 function register_activation_hook(string $file, callable $callback): void
 {
     $GLOBALS['composepress_test_lifecycle'][] = ['activate', $file, $callback];
