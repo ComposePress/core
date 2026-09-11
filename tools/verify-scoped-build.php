@@ -3,13 +3,7 @@
 declare(strict_types=1);
 
 $buildDirectory = __DIR__ . '/../build';
-$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($buildDirectory));
-$files = [];
-foreach ($iterator as $file) {
-    if ($file->isFile() && $file->getExtension() === 'php') {
-        $files[] = $file->getPathname();
-    }
-}
+$files = glob($buildDirectory . '/*.php') ?: [];
 sort($files);
 
 if ($files === []) {
