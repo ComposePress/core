@@ -23,7 +23,8 @@ final class LifecycleIntegrationTest extends TestCase
     {
         $plugin = new Plugin(
             new PluginContext($this->pluginFile, 'composepress-test', '1.0.0'),
-            lifecycle: new LifecycleRecorder(),
+            activator: new LifecycleRecorder(),
+            deactivator: new LifecycleRecorder(),
             uninstaller: LifecycleRecorder::class,
         );
 

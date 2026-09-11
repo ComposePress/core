@@ -37,9 +37,9 @@ final class WordPressHooksTest extends TestCase
         $plugin = new Plugin(
             new PluginContext('/plugins/example/example.php', 'example', '1.0.0'),
             [],
-            new RecordingLifecycle(),
-            null,
-            RecordingUninstall::class,
+            activator: new RecordingLifecycle(),
+            deactivator: new RecordingLifecycle(),
+            uninstaller: RecordingUninstall::class,
         );
 
         $plugin->boot();
@@ -59,9 +59,7 @@ final class WordPressHooksTest extends TestCase
         $plugin = new Plugin(
             new PluginContext('/plugins/example/example.php', 'example', '1.0.0'),
             [],
-            null,
-            null,
-            self::class,
+            uninstaller: self::class,
         );
 
         $this->expectException(\InvalidArgumentException::class);
