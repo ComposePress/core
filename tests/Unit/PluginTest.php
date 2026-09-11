@@ -49,6 +49,22 @@ final class PluginTest extends TestCase
         $plugin->boot();
     }
 
+    public function testGeneratorRequirementsCanBeCheckedBeforeBoot(): void
+    {
+        $requirements = static function (): \Generator {
+            yield new RecordingRequirement('PHP', true, 'PHP requirement satisfied.');
+        };
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '1.0.0'),
+            requirements: $requirements(),
+        );
+
+        self::assertCount(1, $plugin->checkRequirements());
+        $plugin->boot();
+
+        self::assertTrue($plugin->isBooted());
+    }
+
     public function testSatisfiedRequirementsAllowBoot(): void
     {
         $plugin = new Plugin(

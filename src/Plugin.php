@@ -9,6 +9,9 @@ final class Plugin
     private bool $booted = false;
     private bool $bootAttempted = false;
 
+    /** @var list<RequirementResult>|null */
+    private ?array $requirementResults = null;
+
     /**
      * @param iterable<HookSubscriber> $subscribers
      * @param iterable<PluginRequirement> $requirements
@@ -29,6 +32,10 @@ final class Plugin
      */
     public function checkRequirements(): array
     {
+        if ($this->requirementResults !== null) {
+            return $this->requirementResults;
+        }
+
         $results = [];
         foreach ($this->requirements as $requirement) {
             if (!$requirement instanceof PluginRequirement) {
@@ -41,6 +48,8 @@ final class Plugin
 
             $results[] = $requirement->check();
         }
+
+        $this->requirementResults = $results;
 
         return $results;
     }
