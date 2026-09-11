@@ -21,6 +21,16 @@ The command writes generated files to `build/`, which is ignored by Git. The fix
 only a local smoke-test value. A consuming plugin must use a prefix unique to that plugin,
 for example `ExampleVendor\\ExamplePlugin\\Dependencies`.
 
+To exercise two independently scoped copies in one PHP process, run:
+
+```sh
+composer scope:compat
+```
+
+This generates two isolated copies, loads both runtimes, and verifies that their hook adapters
+still call global WordPress functions and that static uninstall callbacks retain their scoped
+class names.
+
 A plugin release build must:
 
 1. install production dependencies from the lock file;

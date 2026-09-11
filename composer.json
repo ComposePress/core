@@ -36,6 +36,7 @@
     "analyse": "phpstan analyse",
     "style": "phpcs --standard=.phpcs.xml.dist src tests",
     "scope": "php vendor/bin/php-scoper add-prefix --config=scoper.inc.php --prefix=ComposePressScoped --output-dir=build --force",
-    "scope:check": "php tools/verify-scoped-build.php"
+    "scope:check": "php tools/verify-scoped-build.php",
+    "scope:compat": "rm -rf build/compat-a build/compat-b && php vendor/bin/php-scoper add-prefix --config=scoper.inc.php --prefix=ComposePressCompatA --output-dir=build/compat-a --force && php vendor/bin/php-scoper add-prefix --config=scoper.inc.php --prefix=ComposePressCompatB --output-dir=build/compat-b --force && php tools/verify-scoped-compat.php"
   }
 }
