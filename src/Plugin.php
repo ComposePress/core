@@ -7,6 +7,7 @@ namespace ComposePress\Core;
 final class Plugin
 {
     private bool $booted = false;
+    private bool $bootAttempted = false;
 
     /**
      * @param iterable<HookSubscriber> $subscribers
@@ -22,9 +23,11 @@ final class Plugin
 
     public function boot(): void
     {
-        if ($this->booted) {
-            throw new \LogicException('Plugin has already been booted.');
+        if ($this->bootAttempted) {
+            throw new \LogicException('Plugin boot has already been attempted.');
         }
+
+        $this->bootAttempted = true;
 
         if ($this->lifecycle !== null || $this->uninstaller !== null) {
             if (!function_exists('register_activation_hook')) {
