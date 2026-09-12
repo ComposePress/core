@@ -15,10 +15,11 @@ be prefixed without changing WordPress symbols:
 ```sh
 composer install
 composer scope
+COMPOSEPRESS_SCOPE_PREFIX=ExampleVendor\\ExamplePlugin\\Dependencies composer scope
 ```
 
-The command writes generated files to `build/`, which is ignored by Git. The fixed prefix is
-only a local smoke-test value. A consuming plugin must use a prefix unique to that plugin,
+The command writes generated files to `build/`, which is ignored by Git. The default prefix
+is only a local smoke-test value. A consuming plugin must use a prefix unique to that plugin,
 for example `ExampleVendor\\ExamplePlugin\\Dependencies`.
 
 To exercise two independently scoped copies in one PHP process, run:
