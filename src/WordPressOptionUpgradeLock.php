@@ -50,6 +50,8 @@ final class WordPressOptionUpgradeLock implements PluginUpgradeLock, PluginUpgra
         if (!$this->deleteOptionValue($existing)) {
             return false;
         }
+
+        $value = $token . '|' . time();
         if (!$this->addOption($value)) {
             return false;
         }
