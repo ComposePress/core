@@ -24,6 +24,7 @@ return [
         'plugins_url',
     ],
     'exclude-classes' => [
+        'wpdb',
         'WP_Error',
         'WP_Post',
     ],

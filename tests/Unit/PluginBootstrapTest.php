@@ -29,12 +29,13 @@ final class PluginBootstrapTest extends TestCase
     {
         $store = new InMemoryVersionStore('1.0.0');
         $upgrader = new RecordingUpgrade();
+        $lock = new RecordingUpgradeLock();
         $plugin = new Plugin(
             new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
             upgrader: $upgrader,
         );
 
-        (new PluginBootstrap($plugin, $store))->run();
+        (new PluginBootstrap($plugin, $store, $lock))->run();
 
         self::assertSame([['1.0.0', '2.0.0']], $upgrader->upgrades);
         self::assertTrue($plugin->isBooted());
@@ -44,6 +45,7 @@ final class PluginBootstrapTest extends TestCase
     public function testVersionIsStoredBeforeBootCompletes(): void
     {
         $store = new InMemoryVersionStore('1.0.0');
+        $lock = new RecordingUpgradeLock();
         $plugin = new Plugin(
             new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
             subscribers: [new class implements HookSubscriber {
@@ -56,9 +58,30 @@ final class PluginBootstrapTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
         try {
-            (new PluginBootstrap($plugin, $store))->run();
+            (new PluginBootstrap($plugin, $store, $lock))->run();
         } finally {
             self::assertSame('2.0.0', $store->get());
+            self::assertFalse($plugin->isBooted());
+        }
+    }
+
+    public function testLockedRereadRejectsNewerInstalledVersion(): void
+    {
+        $store = new InMemoryVersionStore('1.0.0');
+        $lock = new VersionChangingUpgradeLock($store);
+        $upgrader = new RecordingUpgrade();
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            upgrader: $upgrader,
+        );
+
+        $this->expectException(\LogicException::class);
+        try {
+            (new PluginBootstrap($plugin, $store, $lock))->run();
+        } finally {
+            self::assertSame([], $upgrader->upgrades);
+            self::assertSame('3.0.0', $store->get());
+            self::assertTrue($lock->released);
             self::assertFalse($plugin->isBooted());
         }
     }

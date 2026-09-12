@@ -22,23 +22,34 @@ final class WordPressOptionUpgradeLock implements PluginUpgradeLock
 
     public function acquire(): bool
     {
-        if (!function_exists('add_option') || !function_exists('get_option') || !function_exists('delete_option')) {
+        if (!function_exists('add_option') || !function_exists('get_option')) {
             throw new \LogicException('WordPress must be loaded before acquiring plugin upgrade locks.');
         }
 
         $token = bin2hex(random_bytes(16));
-        $value = ['token' => $token, 'created' => time()];
+        $value = $token . '|' . time();
         if ($this->addOption($value)) {
             $this->token = $token;
             return true;
         }
 
         $existing = get_option($this->optionName, null);
-        if (!is_array($existing) || !isset($existing['created']) || time() - (int) $existing['created'] < $this->ttl) {
+        if (!is_string($existing)) {
             return false;
         }
 
-        delete_option($this->optionName);
+        [$existingToken, $created] = array_pad(explode('|', $existing, 2), 2, null);
+        if ($existingToken === null || $created === null || !ctype_digit($created)) {
+            return false;
+        }
+        if (time() - (int) $created < $this->ttl) {
+            return false;
+        }
+
+        // Delete only the value observed above so a concurrent claimant remains protected.
+        if (!$this->deleteOptionValue($existing)) {
+            return false;
+        }
         if (!$this->addOption($value)) {
             return false;
         }
@@ -49,22 +60,44 @@ final class WordPressOptionUpgradeLock implements PluginUpgradeLock
 
     /**
      * @phpstan-impure
-     * @param array<string, mixed> $value
      */
-    private function addOption(array $value): bool
+    private function addOption(string $value): bool
     {
         return add_option($this->optionName, $value, '', false);
     }
 
+    private function deleteOptionValue(string $value): bool
+    {
+        global $wpdb;
+
+        if (!$wpdb instanceof \wpdb) {
+            throw new \LogicException('WordPress database must be loaded before reclaiming upgrade locks.');
+        }
+
+        // The table name is supplied by WordPress; values remain parameterized.
+        $query = $wpdb->prepare(
+            "DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s", // @phpstan-ignore argument.type
+            $this->optionName,
+            $value,
+        );
+        if ($query === null) {
+            return false;
+        }
+
+        $result = $wpdb->query($query);
+
+        return $result === 1;
+    }
+
     public function release(): void
     {
-        if ($this->token === null || !function_exists('get_option') || !function_exists('delete_option')) {
+        if ($this->token === null || !function_exists('get_option')) {
             return;
         }
 
         $existing = get_option($this->optionName, null);
-        if (is_array($existing) && ($existing['token'] ?? null) === $this->token) {
-            delete_option($this->optionName);
+        if (is_string($existing) && str_starts_with($existing, $this->token . '|')) {
+            $this->deleteOptionValue($existing);
         }
 
         $this->token = null;

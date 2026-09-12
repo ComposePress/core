@@ -41,6 +41,13 @@ final class PluginBootstrap
 
             try {
                 $installedVersion = $this->versionStore->get();
+                if ($installedVersion !== null && version_compare($installedVersion, $currentVersion, '>')) {
+                    throw new \LogicException(sprintf(
+                        'Installed plugin version %s is newer than %s.',
+                        $installedVersion,
+                        $currentVersion,
+                    ));
+                }
                 if ($installedVersion !== null && version_compare($installedVersion, $currentVersion, '<')) {
                     $this->plugin->upgrade($installedVersion);
                 }
