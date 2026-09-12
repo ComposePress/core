@@ -22,3 +22,16 @@ jobs:
       - run: composer test:coverage
       - run: composer analyse
       - run: composer style
+
+  scoped-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer scope
+      - run: composer scope:check
+      - run: composer scope:compat
+      - run: composer scope:check
