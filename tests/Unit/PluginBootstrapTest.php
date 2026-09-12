@@ -243,6 +243,40 @@ final class PluginBootstrapTest extends TestCase
         }
     }
 
+    public function testResumedWorkerCannotDowngradeACompletedPeerMarker(): void
+    {
+        $store = new InMemoryVersionStore('1.0.0');
+        $lock = new RecordingUpgradeLock();
+        $upgrader = new class ($store) implements \ComposePress\Core\LeaseAwarePluginUpgrade {
+            public function __construct(private readonly InMemoryVersionStore $store)
+            {
+            }
+
+            public function upgrade(string $fromVersion, string $toVersion): void
+            {
+                throw new \LogicException('Lease-aware upgrade path was not used.');
+            }
+
+            public function upgradeWithLease(
+                string $fromVersion,
+                string $toVersion,
+                \ComposePress\Core\PluginUpgradeLease $lease,
+            ): void {
+                // A peer reclaims the lock, completes its migration, and stores v3.
+                $this->store->set('3.0.0');
+            }
+        };
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            upgrader: $upgrader,
+        );
+
+        (new PluginBootstrap($plugin, $store, $lock))->run();
+
+        self::assertSame('3.0.0', $store->get());
+        self::assertTrue($plugin->isBooted());
+    }
+
     public function testNewerInstalledVersionFailsBeforeBoot(): void
     {
         $store = new InMemoryVersionStore('3.0.0');

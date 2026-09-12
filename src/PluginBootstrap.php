@@ -51,10 +51,10 @@ final class PluginBootstrap
 
                 $lease = $lock instanceof PluginUpgradeLease ? $lock : null;
                 if ($installedVersion === null) {
-                    $this->persistVersion($currentVersion, $lease);
+                    $this->persistVersion(null, $currentVersion, $lease);
                 } elseif (version_compare($installedVersion, $currentVersion, '<')) {
                     $this->plugin->upgrade($installedVersion, $lease);
-                    $this->persistVersion($currentVersion, $lease);
+                    $this->persistVersion($installedVersion, $currentVersion, $lease);
                 }
             } finally {
                 $lock->release();
@@ -64,13 +64,18 @@ final class PluginBootstrap
         $this->plugin->boot();
     }
 
-    private function persistVersion(string $currentVersion, ?PluginUpgradeLease $lease): void
+    private function persistVersion(?string $expected, string $currentVersion, ?PluginUpgradeLease $lease): void
     {
         if ($lease !== null && !$lease->renew()) {
             throw new UpgradeInProgress(sprintf(
                 'Plugin upgrade to %s no longer owns its lock.',
                 $currentVersion,
             ));
+        }
+
+        if ($this->versionStore instanceof AtomicPluginVersionStore) {
+            $this->versionStore->compareAndSet($expected, $currentVersion);
+            return;
         }
 
         $storedVersion = $this->versionStore->get();

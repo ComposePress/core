@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ComposePress\Core;
 
-final class WordPressOptionVersionStore implements PluginVersionStore
+final class WordPressOptionVersionStore implements AtomicPluginVersionStore
 {
     public function __construct(
         private readonly string $optionName,
@@ -51,5 +51,42 @@ final class WordPressOptionVersionStore implements PluginVersionStore
                 $this->optionName,
             ));
         }
+    }
+
+    public function compareAndSet(?string $expected, string $version): bool
+    {
+        if ($version === '') {
+            throw new \InvalidArgumentException('Plugin version is required.');
+        }
+        if (!function_exists('add_option') || !function_exists('get_option') || !function_exists('wp_cache_delete')) {
+            throw new \LogicException('WordPress must be loaded before storing plugin versions.');
+        }
+
+        if ($expected === null) {
+            return add_option($this->optionName, $version, '', $this->autoload);
+        }
+
+        global $wpdb;
+
+        if (!$wpdb instanceof \wpdb) {
+            throw new \LogicException('WordPress database must be loaded before storing plugin versions.');
+        }
+
+        // The table name is supplied by WordPress; values remain parameterized.
+        $query = $wpdb->prepare(
+            "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", // @phpstan-ignore argument.type
+            $version,
+            $this->optionName,
+            $expected,
+        );
+        if ($query === null || $wpdb->query($query) !== 1) {
+            return false;
+        }
+
+        wp_cache_delete($this->optionName, 'options');
+        wp_cache_delete('alloptions', 'options');
+        wp_cache_delete('notoptions', 'options');
+
+        return true;
     }
 }

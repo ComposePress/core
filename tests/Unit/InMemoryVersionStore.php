@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace ComposePress\Core\Tests\Unit;
 
-use ComposePress\Core\PluginVersionStore;
+use ComposePress\Core\AtomicPluginVersionStore;
 
-final class InMemoryVersionStore implements PluginVersionStore
+final class InMemoryVersionStore implements AtomicPluginVersionStore
 {
     /** @var list<string> */
     public array $writes = [];
@@ -24,5 +24,16 @@ final class InMemoryVersionStore implements PluginVersionStore
     {
         $this->writes[] = $version;
         $this->version = $version;
+    }
+
+    public function compareAndSet(?string $expected, string $version): bool
+    {
+        if ($this->version !== $expected) {
+            return false;
+        }
+
+        $this->writes[] = $version;
+        $this->version = $version;
+        return true;
     }
 }
