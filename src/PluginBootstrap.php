@@ -9,6 +9,7 @@ final class PluginBootstrap
     public function __construct(
         private readonly Plugin $plugin,
         private readonly PluginVersionStore $versionStore,
+        private readonly ?PluginUpgradeLock $upgradeLock = null,
     ) {
     }
 
@@ -27,11 +28,31 @@ final class PluginBootstrap
 
         $this->plugin->ensureRequirementsMet();
 
+        $lock = $this->upgradeLock;
         if ($installedVersion !== null && version_compare($installedVersion, $currentVersion, '<')) {
-            $this->plugin->upgrade($installedVersion);
+            $lock ??= new WordPressOptionUpgradeLock($this->plugin->context->slug . '_upgrade_lock');
+            if (!$lock->acquire()) {
+                throw new UpgradeInProgress(sprintf(
+                    'Plugin upgrade to %s is already in progress.',
+                    $currentVersion,
+                ));
+            }
+            $upgradeLockAcquired = true;
+
+            try {
+                $installedVersion = $this->versionStore->get();
+                if ($installedVersion !== null && version_compare($installedVersion, $currentVersion, '<')) {
+                    $this->plugin->upgrade($installedVersion);
+                }
+
+                $this->versionStore->set($currentVersion);
+            } finally {
+                $lock->release();
+            }
+        } else {
+            $this->versionStore->set($currentVersion);
         }
 
-        $this->versionStore->set($currentVersion);
         $this->plugin->boot();
     }
 }

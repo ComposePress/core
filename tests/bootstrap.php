@@ -10,6 +10,7 @@ $GLOBALS['composepress_test_hooks'] = [];
 $GLOBALS['composepress_test_lifecycle'] = [];
 $GLOBALS['composepress_test_options'] = [];
 $GLOBALS['composepress_test_update_option_result'] = true;
+$GLOBALS['composepress_test_upgrade_locks'] = [];
 
 function get_option(string $option, mixed $default = false): mixed
 {
@@ -23,6 +24,26 @@ function update_option(string $option, mixed $value, bool|string $autoload = tru
     }
 
     $GLOBALS['composepress_test_options'][$option] = $value;
+    return true;
+}
+
+function add_option(string $option, mixed $value = '', string $deprecated = '', bool $autoload = true): bool
+{
+    if (array_key_exists($option, $GLOBALS['composepress_test_options'])) {
+        return false;
+    }
+
+    $GLOBALS['composepress_test_options'][$option] = $value;
+    return true;
+}
+
+function delete_option(string $option): bool
+{
+    if (!array_key_exists($option, $GLOBALS['composepress_test_options'])) {
+        return false;
+    }
+
+    unset($GLOBALS['composepress_test_options'][$option]);
     return true;
 }
 

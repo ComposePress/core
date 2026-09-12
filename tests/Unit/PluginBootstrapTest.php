@@ -63,6 +63,29 @@ final class PluginBootstrapTest extends TestCase
         }
     }
 
+    public function testUpgradeDoesNotRunWhileAnotherRequestHoldsTheLock(): void
+    {
+        $store = new InMemoryVersionStore('1.0.0');
+        $upgrader = new RecordingUpgrade();
+        $lock = new RecordingUpgradeLock();
+        $lock->held = true;
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            upgrader: $upgrader,
+        );
+
+        $this->expectException(\ComposePress\Core\UpgradeInProgress::class);
+        try {
+            (new PluginBootstrap($plugin, $store, $lock))->run();
+        } finally {
+            self::assertSame([], $upgrader->upgrades);
+            self::assertSame('1.0.0', $store->get());
+            self::assertFalse($plugin->isBooted());
+            self::assertSame(1, $lock->acquisitions);
+            self::assertSame(0, $lock->releases);
+        }
+    }
+
     public function testFailedRequirementsPreventUpgradeAndVersionPersistence(): void
     {
         $store = new InMemoryVersionStore('1.0.0');

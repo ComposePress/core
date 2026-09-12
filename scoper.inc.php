@@ -16,6 +16,8 @@ return [
         'register_activation_hook',
         'register_deactivation_hook',
         'register_uninstall_hook',
+        'add_option',
+        'delete_option',
         'get_option',
         'update_option',
         'plugin_dir_path',
