@@ -9,6 +9,7 @@ use ComposePress\Core\Hooks;
 use ComposePress\Core\Plugin;
 use ComposePress\Core\PluginBootstrap;
 use ComposePress\Core\PluginContext;
+use ComposePress\Core\RequirementsNotMet;
 use PHPUnit\Framework\TestCase;
 
 final class PluginBootstrapTest extends TestCase
@@ -60,6 +61,27 @@ final class PluginBootstrapTest extends TestCase
             self::assertSame('2.0.0', $store->get());
             self::assertFalse($plugin->isBooted());
         }
+    }
+
+    public function testFailedRequirementsPreventUpgradeAndVersionPersistence(): void
+    {
+        $store = new InMemoryVersionStore('1.0.0');
+        $upgrader = new RecordingUpgrade();
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            requirements: [new RecordingRequirement('database', false, 'Database is unavailable.')],
+            upgrader: $upgrader,
+        );
+
+        try {
+            (new PluginBootstrap($plugin, $store))->run();
+            self::fail('Expected RequirementsNotMet.');
+        } catch (RequirementsNotMet) {
+        }
+
+        self::assertSame([], $upgrader->upgrades);
+        self::assertSame('1.0.0', $store->get());
+        self::assertFalse($plugin->isBooted());
     }
 
     public function testCurrentVersionSkipsUpgrade(): void

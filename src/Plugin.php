@@ -55,6 +55,17 @@ final class Plugin
         return $results;
     }
 
+    public function ensureRequirementsMet(): void
+    {
+        $failedRequirements = array_values(array_filter(
+            $this->checkRequirements(),
+            static fn (RequirementResult $result): bool => !$result->satisfied,
+        ));
+        if ($failedRequirements !== []) {
+            throw new RequirementsNotMet($failedRequirements);
+        }
+    }
+
     public function boot(): void
     {
         if ($this->bootAttempted) {
@@ -63,13 +74,7 @@ final class Plugin
 
         $this->bootAttempted = true;
 
-        $failedRequirements = array_values(array_filter(
-            $this->checkRequirements(),
-            static fn (RequirementResult $result): bool => !$result->satisfied,
-        ));
-        if ($failedRequirements !== []) {
-            throw new RequirementsNotMet($failedRequirements);
-        }
+        $this->ensureRequirementsMet();
 
         if ($this->activator !== null || $this->deactivator !== null || $this->uninstaller !== null) {
             if (!function_exists('register_activation_hook')) {

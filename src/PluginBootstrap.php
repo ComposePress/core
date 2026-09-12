@@ -25,6 +25,8 @@ final class PluginBootstrap
             ));
         }
 
+        $this->plugin->ensureRequirementsMet();
+
         if ($installedVersion !== null && version_compare($installedVersion, $currentVersion, '<')) {
             $this->plugin->upgrade($installedVersion);
         }
