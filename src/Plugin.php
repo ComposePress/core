@@ -24,6 +24,7 @@ final class Plugin
         private readonly ?Hooks $hooks = null,
         private readonly ?string $uninstaller = null,
         private readonly iterable $requirements = [],
+        private readonly ?PluginUpgrade $upgrader = null,
     ) {
     }
 
@@ -110,6 +111,19 @@ final class Plugin
         }
 
         $this->booted = true;
+    }
+
+    public function upgrade(string $fromVersion): void
+    {
+        if ($fromVersion === '') {
+            throw new \InvalidArgumentException('Previous plugin version is required.');
+        }
+
+        if ($this->upgrader === null || version_compare($fromVersion, $this->context->version, '>=')) {
+            return;
+        }
+
+        $this->upgrader->upgrade($fromVersion, $this->context->version);
     }
 
     public function isBooted(): bool

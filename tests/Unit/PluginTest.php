@@ -77,6 +77,29 @@ final class PluginTest extends TestCase
         self::assertTrue($plugin->isBooted());
     }
 
+    public function testUpgradeRunsOnlyForAnOlderVersion(): void
+    {
+        $upgrader = new RecordingUpgrade();
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            upgrader: $upgrader,
+        );
+
+        $plugin->upgrade('1.5.0');
+        $plugin->upgrade('2.0.0');
+        $plugin->upgrade('2.1.0');
+
+        self::assertSame([['1.5.0', '2.0.0']], $upgrader->upgrades);
+    }
+
+    public function testUpgradeRequiresPreviousVersion(): void
+    {
+        $plugin = new Plugin(new PluginContext('/plugins/example/example.php', 'example', '2.0.0'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $plugin->upgrade('');
+    }
+
     public function testBootCannotRunTwice(): void
     {
         $plugin = new Plugin(new PluginContext('/plugins/example/example.php', 'example', '1.0.0'));

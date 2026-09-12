@@ -11,8 +11,10 @@ ComposePress Core is a small runtime boundary for WordPress plugins. It coordina
 
 ```php
 use ComposePress\Core\Plugin;
+use ComposePress\Core\PluginBootstrap;
 use ComposePress\Core\PluginContext;
 use ComposePress\Core\WordPressHooks;
+use ComposePress\Core\WordPressOptionVersionStore;
 
 $plugin = new Plugin(
     context: new PluginContext(__FILE__, 'example-plugin', '1.0.0'),
@@ -43,7 +45,16 @@ $plugin = new Plugin(
     deactivator: new DisablePlugin($scheduler),
     uninstaller: UninstallPlugin::class,
 );
+
+$versionStore = new WordPressOptionVersionStore('example_plugin_version');
+$bootstrap = new PluginBootstrap($plugin, $versionStore);
+$bootstrap->run();
 ```
+
+`PluginBootstrap` reads the installed version, runs an upgrade before request hooks are
+registered, stores the new version only after success, and then boots the plugin. The consuming
+plugin supplies the `PluginVersionStore` implementation and owns its storage policy,
+migration ordering, and scheduling.
 
 ## Development
 

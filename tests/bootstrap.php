@@ -8,6 +8,18 @@ if (!defined('WP_PLUGIN_DIR')) {
 
 $GLOBALS['composepress_test_hooks'] = [];
 $GLOBALS['composepress_test_lifecycle'] = [];
+$GLOBALS['composepress_test_options'] = [];
+
+function get_option(string $option, mixed $default = false): mixed
+{
+    return $GLOBALS['composepress_test_options'][$option] ?? $default;
+}
+
+function update_option(string $option, mixed $value, bool|string $autoload = true): bool
+{
+    $GLOBALS['composepress_test_options'][$option] = $value;
+    return true;
+}
 
 function add_action(string $hook, callable $callback, int $priority = 10, int $arguments = 1): bool
 {
