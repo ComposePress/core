@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-$prefix = getenv('COMPOSEPRESS_SCOPE_PREFIX') ?: 'ComposePressScoped';
+$prefix = getenv('COMPOSEPRESS_SCOPE_PREFIX');
+if ($prefix === false || $prefix === '') {
+    $prefix = 'ComposePressScoped';
+}
 if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*(\\\\[A-Za-z_][A-Za-z0-9_]*)*$/', $prefix)) {
     fwrite(STDERR, "COMPOSEPRESS_SCOPE_PREFIX must be a valid namespace prefix.\n");
     exit(1);

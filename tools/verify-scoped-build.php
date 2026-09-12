@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-$prefix = getenv('COMPOSEPRESS_SCOPE_PREFIX') ?: 'ComposePressScoped';
+$prefix = getenv('COMPOSEPRESS_SCOPE_PREFIX');
+if ($prefix === false || $prefix === '') {
+    $prefix = 'ComposePressScoped';
+}
 $buildDirectory = __DIR__ . '/../build';
 $files = glob($buildDirectory . '/*.php') ?: [];
 sort($files);
