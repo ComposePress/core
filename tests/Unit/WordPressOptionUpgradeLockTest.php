@@ -2,46 +2,65 @@
 
 declare(strict_types=1);
 
-namespace ComposePress\Core\Tests\Unit;
-
-use ComposePress\Core\WordPressOptionUpgradeLock;
-use PHPUnit\Framework\TestCase;
-
-final class WordPressOptionUpgradeLockTest extends TestCase
-{
-    protected function setUp(): void
+namespace ComposePress\Core {
+    function time(): int
     {
-        $GLOBALS['composepress_test_options'] = [];
-        $GLOBALS['composepress_test_cache_deletes'] = [];
+        return $GLOBALS['composepress_test_time'] ?? \time();
     }
+}
 
-    public function testRenewInvalidatesOptionCachesAfterConditionalUpdate(): void
+namespace ComposePress\Core\Tests\Unit {
+    use ComposePress\Core\WordPressOptionUpgradeLock;
+    use PHPUnit\Framework\TestCase;
+
+    final class WordPressOptionUpgradeLockTest extends TestCase
     {
-        $lock = new WordPressOptionUpgradeLock('example_upgrade_lock');
+        protected function setUp(): void
+        {
+            $GLOBALS['composepress_test_options'] = [];
+            $GLOBALS['composepress_test_cache_deletes'] = [];
+            $GLOBALS['composepress_test_time'] = 1_000;
+        }
 
-        self::assertTrue($lock->acquire());
-        $GLOBALS['composepress_test_cache_deletes'] = [];
+        protected function tearDown(): void
+        {
+            unset($GLOBALS['composepress_test_time']);
+        }
 
-        self::assertTrue($lock->renew());
+        public function testSameSecondRenewalKeepsCurrentLeaseWithoutUpdate(): void
+        {
+            $lock = new WordPressOptionUpgradeLock('example_upgrade_lock');
 
-        self::assertSame([
-            ['example_upgrade_lock', 'options'],
-            ['alloptions', 'options'],
-            ['notoptions', 'options'],
-        ], $GLOBALS['composepress_test_cache_deletes']);
-    }
+            self::assertTrue($lock->acquire());
+            $GLOBALS['composepress_test_cache_deletes'] = [];
 
-    public function testReleaseInvalidatesOptionCachesAfterConditionalDelete(): void
-    {
-        $lock = new WordPressOptionUpgradeLock('example_upgrade_lock');
+            self::assertTrue($lock->renew());
+            self::assertTrue($lock->renew());
+            self::assertSame([], $GLOBALS['composepress_test_cache_deletes']);
+        }
 
-        self::assertTrue($lock->acquire());
-        $lock->release();
+        public function testRenewalFailsWhenAnotherOwnerReplacesTheLock(): void
+        {
+            $lock = new WordPressOptionUpgradeLock('example_upgrade_lock');
 
-        self::assertSame([
-            ['example_upgrade_lock', 'options'],
-            ['alloptions', 'options'],
-            ['notoptions', 'options'],
-        ], $GLOBALS['composepress_test_cache_deletes']);
+            self::assertTrue($lock->acquire());
+            $GLOBALS['composepress_test_options']['example_upgrade_lock'] = 'another-owner|1000';
+
+            self::assertFalse($lock->renew());
+        }
+
+        public function testReleaseInvalidatesOptionCachesAfterConditionalDelete(): void
+        {
+            $lock = new WordPressOptionUpgradeLock('example_upgrade_lock');
+
+            self::assertTrue($lock->acquire());
+            $lock->release();
+
+            self::assertSame([
+                ['example_upgrade_lock', 'options'],
+                ['alloptions', 'options'],
+                ['notoptions', 'options'],
+            ], $GLOBALS['composepress_test_cache_deletes']);
+        }
     }
 }

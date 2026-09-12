@@ -133,7 +133,12 @@ final class WordPressOptionUpgradeLock implements PluginUpgradeLock, PluginUpgra
             return false;
         }
 
-        return $this->replaceOptionValue($existing, $this->token . '|' . time());
+        $renewedValue = $this->token . '|' . time();
+        if ($renewedValue === $existing) {
+            return true;
+        }
+
+        return $this->replaceOptionValue($existing, $renewedValue);
     }
 
     public function release(): void
