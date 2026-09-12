@@ -17,12 +17,16 @@ final class PluginBootstrapTest extends TestCase
     public function testFirstBootStoresCurrentVersion(): void
     {
         $store = new InMemoryVersionStore();
+        $lock = new RecordingUpgradeLock();
         $plugin = new Plugin(new PluginContext('/plugins/example/example.php', 'example', '2.0.0'));
 
-        (new PluginBootstrap($plugin, $store))->run();
+        (new PluginBootstrap($plugin, $store, $lock))->run();
 
         self::assertTrue($plugin->isBooted());
         self::assertSame('2.0.0', $store->get());
+        self::assertSame(['2.0.0'], $store->writes);
+        self::assertSame(1, $lock->acquisitions);
+        self::assertSame(1, $lock->releases);
     }
 
     public function testUpgradeRunsBeforeBootAndStoresVersionAfterSuccess(): void
@@ -143,6 +147,61 @@ final class PluginBootstrapTest extends TestCase
 
         self::assertSame([], $upgrader->upgrades);
         self::assertTrue($plugin->isBooted());
+    }
+
+    public function testCurrentVersionNeverOverwritesANewerMarker(): void
+    {
+        $store = new InMemoryVersionStore('2.0.0');
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            subscribers: [new class ($store) implements HookSubscriber {
+                public function __construct(private readonly InMemoryVersionStore $store)
+                {
+                }
+
+                public function subscribe(Hooks $hooks): void
+                {
+                    $this->store->set('3.0.0');
+                }
+            }],
+        );
+
+        (new PluginBootstrap($plugin, $store))->run();
+
+        self::assertSame('3.0.0', $store->get());
+        self::assertSame(['3.0.0'], $store->writes);
+    }
+
+    public function testLeaseAwareUpgradeCanRenewItsLock(): void
+    {
+        $store = new InMemoryVersionStore('1.0.0');
+        $lock = new RecordingUpgradeLock();
+        $upgrader = new class implements \ComposePress\Core\LeaseAwarePluginUpgrade {
+            public bool $renewed = false;
+
+            public function upgrade(string $fromVersion, string $toVersion): void
+            {
+                throw new \LogicException('Lease-aware upgrade path was not used.');
+            }
+
+            public function upgradeWithLease(
+                string $fromVersion,
+                string $toVersion,
+                \ComposePress\Core\PluginUpgradeLease $lease,
+            ): void {
+                $this->renewed = $lease->renew();
+            }
+        };
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            upgrader: $upgrader,
+        );
+
+        (new PluginBootstrap($plugin, $store, $lock))->run();
+
+        self::assertTrue($upgrader->renewed);
+        self::assertSame(1, $lock->renewals);
+        self::assertSame('2.0.0', $store->get());
     }
 
     public function testNewerInstalledVersionFailsBeforeBoot(): void

@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace ComposePress\Core\Tests\Unit;
 
+use ComposePress\Core\PluginUpgradeLease;
 use ComposePress\Core\PluginUpgradeLock;
 
-final class RecordingUpgradeLock implements PluginUpgradeLock
+final class RecordingUpgradeLock implements PluginUpgradeLock, PluginUpgradeLease
 {
     public bool $held = false;
 
     public int $acquisitions = 0;
 
     public int $releases = 0;
+
+    public int $renewals = 0;
 
     public function acquire(): bool
     {
@@ -23,6 +26,12 @@ final class RecordingUpgradeLock implements PluginUpgradeLock
 
         $this->held = true;
         return true;
+    }
+
+    public function renew(): bool
+    {
+        $this->renewals++;
+        return $this->held;
     }
 
     public function release(): void

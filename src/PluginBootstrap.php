@@ -28,16 +28,16 @@ final class PluginBootstrap
 
         $this->plugin->ensureRequirementsMet();
 
-        $lock = $this->upgradeLock;
-        if ($installedVersion !== null && version_compare($installedVersion, $currentVersion, '<')) {
-            $lock ??= new WordPressOptionUpgradeLock($this->plugin->context->slug . '_upgrade_lock');
+        if ($installedVersion === null || version_compare($installedVersion, $currentVersion, '<')) {
+            $lock = $this->upgradeLock ?? new WordPressOptionUpgradeLock(
+                $this->plugin->context->slug . '_upgrade_lock',
+            );
             if (!$lock->acquire()) {
                 throw new UpgradeInProgress(sprintf(
                     'Plugin upgrade to %s is already in progress.',
                     $currentVersion,
                 ));
             }
-            $upgradeLockAcquired = true;
 
             try {
                 $installedVersion = $this->versionStore->get();
@@ -48,16 +48,17 @@ final class PluginBootstrap
                         $currentVersion,
                     ));
                 }
-                if ($installedVersion !== null && version_compare($installedVersion, $currentVersion, '<')) {
-                    $this->plugin->upgrade($installedVersion);
-                }
 
-                $this->versionStore->set($currentVersion);
+                if ($installedVersion === null) {
+                    $this->versionStore->set($currentVersion);
+                } elseif (version_compare($installedVersion, $currentVersion, '<')) {
+                    $lease = $lock instanceof PluginUpgradeLease ? $lock : null;
+                    $this->plugin->upgrade($installedVersion, $lease);
+                    $this->versionStore->set($currentVersion);
+                }
             } finally {
                 $lock->release();
             }
-        } else {
-            $this->versionStore->set($currentVersion);
         }
 
         $this->plugin->boot();

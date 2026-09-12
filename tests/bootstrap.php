@@ -6,11 +6,38 @@ if (!defined('WP_PLUGIN_DIR')) {
     define('WP_PLUGIN_DIR', '/tmp/wordpress/wp-content/plugins');
 }
 
+// phpcs:disable PSR1.Classes.ClassDeclaration,Generic.NamingConventions.CamelCapsClassName
+if (!class_exists('wpdb')) {
+    // phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
+    class wpdb
+    {
+        public string $options = 'wp_options';
+
+        public function __construct(mixed ...$args)
+        {
+            unset($args);
+        }
+
+        public function prepare(string $query, mixed ...$args): string
+        {
+            return $query;
+        }
+
+        public function query(string $query): int
+        {
+            return 1;
+        }
+    }
+}
+// phpcs:enable PSR1.Classes.ClassDeclaration,Generic.NamingConventions.CamelCapsClassName
+
+$GLOBALS['wpdb'] = new wpdb('', '', '', '');
 $GLOBALS['composepress_test_hooks'] = [];
 $GLOBALS['composepress_test_lifecycle'] = [];
 $GLOBALS['composepress_test_options'] = [];
 $GLOBALS['composepress_test_update_option_result'] = true;
 $GLOBALS['composepress_test_upgrade_locks'] = [];
+$GLOBALS['composepress_test_cache_deletes'] = [];
 
 function get_option(string $option, mixed $default = false): mixed
 {
@@ -24,6 +51,12 @@ function update_option(string $option, mixed $value, bool|string $autoload = tru
     }
 
     $GLOBALS['composepress_test_options'][$option] = $value;
+    return true;
+}
+
+function wp_cache_delete(string $key, string $group = ''): bool
+{
+    $GLOBALS['composepress_test_cache_deletes'][] = [$key, $group];
     return true;
 }
 

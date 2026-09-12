@@ -20,6 +20,7 @@ return [
         'delete_option',
         'get_option',
         'update_option',
+        'wp_cache_delete',
         'plugin_dir_path',
         'plugins_url',
     ],

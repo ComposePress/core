@@ -8,6 +8,9 @@ use ComposePress\Core\PluginVersionStore;
 
 final class InMemoryVersionStore implements PluginVersionStore
 {
+    /** @var list<string> */
+    public array $writes = [];
+
     public function __construct(private ?string $version = null)
     {
     }
@@ -19,6 +22,7 @@ final class InMemoryVersionStore implements PluginVersionStore
 
     public function set(string $version): void
     {
+        $this->writes[] = $version;
         $this->version = $version;
     }
 }

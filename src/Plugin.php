@@ -118,13 +118,18 @@ final class Plugin
         $this->booted = true;
     }
 
-    public function upgrade(string $fromVersion): void
+    public function upgrade(string $fromVersion, ?PluginUpgradeLease $lease = null): void
     {
         if ($fromVersion === '') {
             throw new \InvalidArgumentException('Previous plugin version is required.');
         }
 
         if ($this->upgrader === null || version_compare($fromVersion, $this->context->version, '>=')) {
+            return;
+        }
+
+        if ($lease !== null && $this->upgrader instanceof LeaseAwarePluginUpgrade) {
+            $this->upgrader->upgradeWithLease($fromVersion, $this->context->version, $lease);
             return;
         }
 

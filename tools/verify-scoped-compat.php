@@ -7,19 +7,26 @@ require_once __DIR__ . '/../tests/bootstrap.php';
 $prefixes = ['ComposePressCompatA', 'ComposePressCompatB'];
 foreach ($prefixes as $prefix) {
     $directory = strtolower(str_replace('ComposePressCompat', 'compat-', $prefix));
-    $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator(__DIR__ . '/../build/' . $directory),
-    );
-    $files = [];
-    foreach ($iterator as $file) {
-        if ($file->isFile() && $file->getExtension() === 'php') {
-            $files[] = $file->getPathname();
+    spl_autoload_register(static function (string $class) use ($prefix, $directory): void {
+        $prefixWithNamespace = $prefix . '\\';
+        if (!str_starts_with($class, $prefixWithNamespace)) {
+            return;
         }
-    }
-    sort($files);
-    foreach ($files as $file) {
-        require_once $file;
-    }
+
+        $relativeClass = substr($class, strlen($prefixWithNamespace));
+        if (str_starts_with($relativeClass, 'ComposePress\\Core\\Tests\\')) {
+            $relativePath = 'tests/' . str_replace('\\', '/', substr($relativeClass, 24));
+        } elseif (str_starts_with($relativeClass, 'ComposePress\\Core\\')) {
+            $relativePath = 'src/' . str_replace('\\', '/', substr($relativeClass, 18));
+        } else {
+            return;
+        }
+
+        $file = __DIR__ . '/../build/' . $directory . '/' . $relativePath . '.php';
+        if (is_file($file)) {
+            require_once $file;
+        }
+    });
 }
 
 $classA = 'ComposePressCompatA\\ComposePress\\Core\\Plugin';

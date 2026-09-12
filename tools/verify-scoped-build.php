@@ -21,6 +21,7 @@ $forbidden = [
     'ComposePressScoped\\delete_option',
     'ComposePressScoped\\get_option',
     'ComposePressScoped\\update_option',
+    'ComposePressScoped\\wp_cache_delete',
     'ComposePressScoped\\plugin_dir_path',
     'ComposePressScoped\\plugins_url',
 ];

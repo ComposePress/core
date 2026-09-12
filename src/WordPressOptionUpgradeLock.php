@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ComposePress\Core;
 
-final class WordPressOptionUpgradeLock implements PluginUpgradeLock
+final class WordPressOptionUpgradeLock implements PluginUpgradeLock, PluginUpgradeLease
 {
     private ?string $token = null;
 
@@ -22,7 +22,7 @@ final class WordPressOptionUpgradeLock implements PluginUpgradeLock
 
     public function acquire(): bool
     {
-        if (!function_exists('add_option') || !function_exists('get_option')) {
+        if (!function_exists('add_option') || !function_exists('get_option') || !function_exists('wp_cache_delete')) {
             throw new \LogicException('WordPress must be loaded before acquiring plugin upgrade locks.');
         }
 
@@ -85,13 +85,60 @@ final class WordPressOptionUpgradeLock implements PluginUpgradeLock
         }
 
         $result = $wpdb->query($query);
+        if ($result !== 1) {
+            return false;
+        }
 
-        return $result === 1;
+        wp_cache_delete($this->optionName, 'options');
+        wp_cache_delete('alloptions', 'options');
+        wp_cache_delete('notoptions', 'options');
+
+        return true;
+    }
+
+    private function replaceOptionValue(string $oldValue, string $newValue): bool
+    {
+        global $wpdb;
+
+        if (!$wpdb instanceof \wpdb) {
+            throw new \LogicException('WordPress database must be loaded before renewing upgrade locks.');
+        }
+
+        // A lease owner must not extend a lock that a later claimant already replaced.
+        $query = $wpdb->prepare(
+            "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", // @phpstan-ignore argument.type
+            $newValue,
+            $this->optionName,
+            $oldValue,
+        );
+        if ($query === null || $wpdb->query($query) !== 1) {
+            return false;
+        }
+
+        wp_cache_delete($this->optionName, 'options');
+        wp_cache_delete('alloptions', 'options');
+        wp_cache_delete('notoptions', 'options');
+
+        return true;
+    }
+
+    public function renew(): bool
+    {
+        if ($this->token === null || !function_exists('get_option') || !function_exists('wp_cache_delete')) {
+            return false;
+        }
+
+        $existing = get_option($this->optionName, null);
+        if (!is_string($existing) || !str_starts_with($existing, $this->token . '|')) {
+            return false;
+        }
+
+        return $this->replaceOptionValue($existing, $this->token . '|' . time());
     }
 
     public function release(): void
     {
-        if ($this->token === null || !function_exists('get_option')) {
+        if ($this->token === null || !function_exists('get_option') || !function_exists('wp_cache_delete')) {
             return;
         }
 
