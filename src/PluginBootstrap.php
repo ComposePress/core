@@ -83,7 +83,7 @@ final class PluginBootstrap
         }
 
         $storedVersion = $this->versionStore->get();
-        if ($storedVersion === null || version_compare($storedVersion, $currentVersion, '<')) {
+        if ($storedVersion !== $currentVersion) {
             throw new \RuntimeException(sprintf(
                 'Plugin version %s was not persisted; stored version is %s.',
                 $currentVersion,

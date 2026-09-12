@@ -39,7 +39,7 @@ final class WordPressOptionUpgradeLock implements PluginUpgradeLock, PluginUpgra
         }
 
         [$existingToken, $created] = array_pad(explode('|', $existing, 2), 2, null);
-        if ($existingToken === null || $created === null || !ctype_digit($created)) {
+        if ($existingToken === null || $created === null || $created === '' || (string) (int) $created !== $created) {
             return false;
         }
         if (time() - (int) $created < $this->ttl) {

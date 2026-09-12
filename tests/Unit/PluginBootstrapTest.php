@@ -271,10 +271,13 @@ final class PluginBootstrapTest extends TestCase
             upgrader: $upgrader,
         );
 
-        (new PluginBootstrap($plugin, $store, $lock))->run();
-
-        self::assertSame('3.0.0', $store->get());
-        self::assertTrue($plugin->isBooted());
+        $this->expectException(\RuntimeException::class);
+        try {
+            (new PluginBootstrap($plugin, $store, $lock))->run();
+        } finally {
+            self::assertSame('3.0.0', $store->get());
+            self::assertFalse($plugin->isBooted());
+        }
     }
 
     public function testFailedVersionPersistencePreventsBoot(): void
@@ -301,6 +304,47 @@ final class PluginBootstrapTest extends TestCase
             {
                 // The backing write fails silently; the marker never advances.
                 return false;
+            }
+        };
+        $lock = new RecordingUpgradeLock();
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            upgrader: new RecordingUpgrade(),
+        );
+
+        $this->expectException(\RuntimeException::class);
+        try {
+            (new PluginBootstrap($plugin, $store, $lock))->run();
+        } finally {
+            self::assertFalse($plugin->isBooted());
+        }
+    }
+
+    public function testPersistenceRevealingNewerVersionPreventsBoot(): void
+    {
+        $store = new class ('1.0.0') implements \ComposePress\Core\AtomicPluginVersionStore {
+            private ?string $value;
+
+            public function __construct(?string $value)
+            {
+                $this->value = $value;
+            }
+
+            public function get(): ?string
+            {
+                return $this->value;
+            }
+
+            public function set(string $version): void
+            {
+                $this->value = $version;
+            }
+
+            public function compareAndSet(?string $expected, string $version): bool
+            {
+                // A peer deployment simultaneously advances the marker past us.
+                $this->value = '3.0.0';
+                return true;
             }
         };
         $lock = new RecordingUpgradeLock();

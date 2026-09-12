@@ -101,6 +101,15 @@ namespace ComposePress\Core\Tests\Unit {
             self::assertFalse($contender->acquire());
         }
 
+        public function testAcquireTreatsNonNumericTimestampAsContention(): void
+        {
+            $GLOBALS['composepress_test_options']['example_upgrade_lock'] = 'owner|not-a-timestamp';
+
+            $lock = new WordPressOptionUpgradeLock('example_upgrade_lock', 1);
+
+            self::assertFalse($lock->acquire());
+        }
+
         public function testRenewalFailsWhenAnotherOwnerReplacesTheLock(): void
         {
             $lock = new WordPressOptionUpgradeLock('example_upgrade_lock');
