@@ -200,8 +200,47 @@ final class PluginBootstrapTest extends TestCase
         (new PluginBootstrap($plugin, $store, $lock))->run();
 
         self::assertTrue($upgrader->renewed);
-        self::assertSame(1, $lock->renewals);
+        self::assertSame(2, $lock->renewals);
         self::assertSame('2.0.0', $store->get());
+    }
+
+    public function testLostUpgradeLeaseCannotDowngradeANewerVersionMarker(): void
+    {
+        $store = new InMemoryVersionStore('1.0.0');
+        $lock = new RecordingUpgradeLock();
+        $upgrader = new class ($store, $lock) implements \ComposePress\Core\LeaseAwarePluginUpgrade {
+            public function __construct(
+                private readonly InMemoryVersionStore $store,
+                private readonly RecordingUpgradeLock $lock,
+            ) {
+            }
+
+            public function upgrade(string $fromVersion, string $toVersion): void
+            {
+                throw new \LogicException('Lease-aware upgrade path was not used.');
+            }
+
+            public function upgradeWithLease(
+                string $fromVersion,
+                string $toVersion,
+                \ComposePress\Core\PluginUpgradeLease $lease,
+            ): void {
+                $this->store->set('3.0.0');
+                $this->lock->renewable = false;
+            }
+        };
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            upgrader: $upgrader,
+        );
+
+        $this->expectException(\ComposePress\Core\UpgradeInProgress::class);
+        try {
+            (new PluginBootstrap($plugin, $store, $lock))->run();
+        } finally {
+            self::assertSame('3.0.0', $store->get());
+            self::assertFalse($plugin->isBooted());
+        }
     }
 
     public function testNewerInstalledVersionFailsBeforeBoot(): void

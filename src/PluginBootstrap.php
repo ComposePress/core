@@ -49,12 +49,12 @@ final class PluginBootstrap
                     ));
                 }
 
+                $lease = $lock instanceof PluginUpgradeLease ? $lock : null;
                 if ($installedVersion === null) {
-                    $this->versionStore->set($currentVersion);
+                    $this->persistVersion($currentVersion, $lease);
                 } elseif (version_compare($installedVersion, $currentVersion, '<')) {
-                    $lease = $lock instanceof PluginUpgradeLease ? $lock : null;
                     $this->plugin->upgrade($installedVersion, $lease);
-                    $this->versionStore->set($currentVersion);
+                    $this->persistVersion($currentVersion, $lease);
                 }
             } finally {
                 $lock->release();
@@ -62,5 +62,20 @@ final class PluginBootstrap
         }
 
         $this->plugin->boot();
+    }
+
+    private function persistVersion(string $currentVersion, ?PluginUpgradeLease $lease): void
+    {
+        if ($lease !== null && !$lease->renew()) {
+            throw new UpgradeInProgress(sprintf(
+                'Plugin upgrade to %s no longer owns its lock.',
+                $currentVersion,
+            ));
+        }
+
+        $storedVersion = $this->versionStore->get();
+        if ($storedVersion === null || version_compare($storedVersion, $currentVersion, '<')) {
+            $this->versionStore->set($currentVersion);
+        }
     }
 }

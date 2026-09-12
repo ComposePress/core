@@ -17,6 +17,8 @@ final class RecordingUpgradeLock implements PluginUpgradeLock, PluginUpgradeLeas
 
     public int $renewals = 0;
 
+    public bool $renewable = true;
+
     public function acquire(): bool
     {
         $this->acquisitions++;
@@ -31,7 +33,7 @@ final class RecordingUpgradeLock implements PluginUpgradeLock, PluginUpgradeLeas
     public function renew(): bool
     {
         $this->renewals++;
-        return $this->held;
+        return $this->held && $this->renewable;
     }
 
     public function release(): void
