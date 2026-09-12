@@ -9,6 +9,7 @@ if (!defined('WP_PLUGIN_DIR')) {
 $GLOBALS['composepress_test_hooks'] = [];
 $GLOBALS['composepress_test_lifecycle'] = [];
 $GLOBALS['composepress_test_options'] = [];
+$GLOBALS['composepress_test_update_option_result'] = true;
 
 function get_option(string $option, mixed $default = false): mixed
 {
@@ -17,6 +18,10 @@ function get_option(string $option, mixed $default = false): mixed
 
 function update_option(string $option, mixed $value, bool|string $autoload = true): bool
 {
+    if (!$GLOBALS['composepress_test_update_option_result']) {
+        return false;
+    }
+
     $GLOBALS['composepress_test_options'][$option] = $value;
     return true;
 }

@@ -35,6 +35,21 @@ final class WordPressOptionVersionStore implements PluginVersionStore
             throw new \LogicException('WordPress must be loaded before storing plugin versions.');
         }
 
-        update_option($this->optionName, $version, $this->autoload);
+        $updated = update_option($this->optionName, $version, $this->autoload);
+        if (!$updated && get_option($this->optionName, null) !== $version) {
+            throw new \RuntimeException(sprintf(
+                'Unable to store plugin version %s in option %s.',
+                $version,
+                $this->optionName,
+            ));
+        }
+
+        if (get_option($this->optionName, null) !== $version) {
+            throw new \RuntimeException(sprintf(
+                'Plugin version %s was not persisted in option %s.',
+                $version,
+                $this->optionName,
+            ));
+        }
     }
 }

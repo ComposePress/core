@@ -29,7 +29,7 @@ final class PluginBootstrap
             $this->plugin->upgrade($installedVersion);
         }
 
-        $this->plugin->boot();
         $this->versionStore->set($currentVersion);
+        $this->plugin->boot();
     }
 }

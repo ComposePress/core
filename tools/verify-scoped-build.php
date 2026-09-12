@@ -17,6 +17,8 @@ $forbidden = [
     'ComposePressScoped\\register_activation_hook',
     'ComposePressScoped\\register_deactivation_hook',
     'ComposePressScoped\\register_uninstall_hook',
+    'ComposePressScoped\\get_option',
+    'ComposePressScoped\\update_option',
     'ComposePressScoped\\plugin_dir_path',
     'ComposePressScoped\\plugins_url',
 ];
