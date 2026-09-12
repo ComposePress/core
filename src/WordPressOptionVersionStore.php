@@ -66,19 +66,36 @@ final class WordPressOptionVersionStore implements AtomicPluginVersionStore
             return add_option($this->optionName, $version, '', $this->autoload);
         }
 
+        if ($expected === '') {
+            // An empty row is treated as absent by get(); replace it in place.
+            return $this->updateOptionValue($version);
+        }
+
+        return $this->updateOptionValue($version, $expected);
+    }
+
+    private function updateOptionValue(string $version, ?string $expected = null): bool
+    {
         global $wpdb;
 
         if (!$wpdb instanceof \wpdb) {
             throw new \LogicException('WordPress database must be loaded before storing plugin versions.');
         }
 
-        // The table name is supplied by WordPress; values remain parameterized.
-        $query = $wpdb->prepare(
-            "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", // @phpstan-ignore argument.type
-            $version,
-            $this->optionName,
-            $expected,
-        );
+        if ($expected === null) {
+            $query = $wpdb->prepare(
+                "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s", // @phpstan-ignore argument.type
+                $version,
+                $this->optionName,
+            );
+        } else {
+            $query = $wpdb->prepare(
+                "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", // @phpstan-ignore argument.type
+                $version,
+                $this->optionName,
+                $expected,
+            );
+        }
         if ($query === null || $wpdb->query($query) !== 1) {
             return false;
         }

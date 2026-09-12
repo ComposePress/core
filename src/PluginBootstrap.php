@@ -75,12 +75,20 @@ final class PluginBootstrap
 
         if ($this->versionStore instanceof AtomicPluginVersionStore) {
             $this->versionStore->compareAndSet($expected, $currentVersion);
-            return;
+        } else {
+            $storedVersion = $this->versionStore->get();
+            if ($storedVersion === null || version_compare($storedVersion, $currentVersion, '<')) {
+                $this->versionStore->set($currentVersion);
+            }
         }
 
         $storedVersion = $this->versionStore->get();
         if ($storedVersion === null || version_compare($storedVersion, $currentVersion, '<')) {
-            $this->versionStore->set($currentVersion);
+            throw new \RuntimeException(sprintf(
+                'Plugin version %s was not persisted; stored version is %s.',
+                $currentVersion,
+                $storedVersion ?? 'none',
+            ));
         }
     }
 }

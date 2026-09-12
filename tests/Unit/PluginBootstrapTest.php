@@ -277,6 +277,46 @@ final class PluginBootstrapTest extends TestCase
         self::assertTrue($plugin->isBooted());
     }
 
+    public function testFailedVersionPersistencePreventsBoot(): void
+    {
+        $store = new class ('1.0.0') implements \ComposePress\Core\AtomicPluginVersionStore {
+            private ?string $value;
+
+            public function __construct(?string $value)
+            {
+                $this->value = $value;
+            }
+
+            public function get(): ?string
+            {
+                return $this->value;
+            }
+
+            public function set(string $version): void
+            {
+                $this->value = $version;
+            }
+
+            public function compareAndSet(?string $expected, string $version): bool
+            {
+                // The backing write fails silently; the marker never advances.
+                return false;
+            }
+        };
+        $lock = new RecordingUpgradeLock();
+        $plugin = new Plugin(
+            new PluginContext('/plugins/example/example.php', 'example', '2.0.0'),
+            upgrader: new RecordingUpgrade(),
+        );
+
+        $this->expectException(\RuntimeException::class);
+        try {
+            (new PluginBootstrap($plugin, $store, $lock))->run();
+        } finally {
+            self::assertFalse($plugin->isBooted());
+        }
+    }
+
     public function testNewerInstalledVersionFailsBeforeBoot(): void
     {
         $store = new InMemoryVersionStore('3.0.0');

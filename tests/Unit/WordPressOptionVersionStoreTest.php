@@ -119,6 +119,43 @@ final class WordPressOptionVersionStoreTest extends TestCase
         ], $GLOBALS['composepress_test_cache_deletes']);
     }
 
+    public function testCompareAndSetReplacesAnEmptyStoredValue(): void
+    {
+        $GLOBALS['composepress_test_options']['example_version'] = '';
+        $GLOBALS['wpdb'] = new class ('', '', '', '') extends \wpdb {
+            public function prepare(mixed $query, mixed ...$args): string
+            {
+                $query = (string) $query;
+                foreach ($args as $argument) {
+                    $query = preg_replace('/%s/', "'" . addslashes((string) $argument) . "'", $query, 1) ?? $query;
+                }
+
+                return $query;
+            }
+
+            public function query(mixed $query): int
+            {
+                $query = (string) $query;
+                if (
+                    preg_match(
+                        "/UPDATE wp_options SET option_value = '([^']+)' WHERE option_name = '([^']+)'/",
+                        $query,
+                        $matches,
+                    ) !== 1
+                ) {
+                    return 1;
+                }
+
+                $GLOBALS['composepress_test_options'][$matches[2]] = $matches[1];
+                return 1;
+            }
+        };
+        $store = new WordPressOptionVersionStore('example_version');
+
+        self::assertTrue($store->compareAndSet('', '2.0.0'));
+        self::assertSame('2.0.0', $store->get());
+    }
+
     public function testCompareAndSetRejectsAChangedStoredVersion(): void
     {
         $GLOBALS['composepress_test_options']['example_version'] = '3.0.0';
