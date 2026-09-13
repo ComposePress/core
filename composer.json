@@ -6,6 +6,9 @@
   "config": {
     "platform": {
       "php": "8.2.0"
+    },
+    "allow-plugins": {
+      "roots/wordpress-core-installer": true
     }
   },
   "require": {
@@ -17,7 +20,15 @@
     "php-stubs/wordpress-stubs": "^6.4",
     "squizlabs/php_codesniffer": "^3.13",
     "yoast/phpunit-polyfills": "^4.0",
-    "humbug/php-scoper": "^0.18"
+    "humbug/php-scoper": "^0.18",
+    "roots/wordpress-core-installer": "^2.0",
+    "roots/wordpress-no-content": "^7.1"
+  },
+  "suggest": {
+    "roots/wordpress-no-content": "Provides a real WP_Hook engine so ComposePress\\Core\\Testing\\RecordingHooks can run in unit tests without loading WordPress"
+  },
+  "extra": {
+    "wordpress-install-dir": "var/wordpress"
   },
   "autoload": {
     "psr-4": {

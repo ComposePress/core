@@ -45,6 +45,42 @@ $plugin = new Plugin(
 );
 ```
 
+## Testing
+
+The `ComposePress\Core\Testing` namespace ships pure test doubles for the runtime boundary. They record calls as ordinary objects — no WordPress functions are invoked, so they work in unit tests, integration tests, and any test setup:
+
+```php
+use ComposePress\Core\Testing\RecordingActivator;
+use ComposePress\Core\Testing\RecordingDeactivator;
+use ComposePress\Core\Testing\RecordingHooks;
+use ComposePress\Core\Testing\RecordingSubscriber;
+use ComposePress\Core\Testing\SpyingUninstall;
+
+$hooks = new RecordingHooks();
+$subscriber = new RecordingSubscriber(['init', 'save_post']);
+
+$plugin = new Plugin(
+    context: new PluginContext(__FILE__, 'example-plugin', '1.0.0'),
+    subscribers: [$subscriber],
+    hooks: $hooks,
+);
+
+$plugin->boot();
+
+self::assertSame(['init', 'save_post'], $hooks->actionNames());
+self::assertCount(1, $hooks->actionsFor('save_post'));
+self::assertSame(1, $subscriber->invocations());
+```
+
+- `RecordingHooks` (implements `Hooks`) records every action/filter registration and removal, including callback, priority, and argument count; asserts through `actionsFor()`, `filtersFor()`, `removedActionsFor()`, `removedFiltersFor()`, `actionNames()`, `filterNames()`, `hasAction()`, and `hasFilter()`.
+- `RecordingSubscriber` (implements `HookSubscriber`) captures each `subscribe()` invocation and the `Hooks` instance it received.
+- `RecordingActivator` and `RecordingDeactivator` record each activation/deactivation call with its `networkWide` flag.
+- `SpyingUninstall` (implements `static PluginUninstall::uninstall()`) records uninstall invocations for use as an uninstaller class string.
+
+`RecordingHooks` delegates its registration state to the real `WP_Hook` engine (replace-on-re-add, unique callback ids via `_wp_filter_build_unique_id()`, exact-priority removal, and `hasAction()`/`hasFilter()` returning the registered priority (`int`) or `false`, mirroring `has_action()`/`has_filter()`) and adds only a call-history recorder. WordPress must be loadable in the test process: the running installation when integration testing, or `roots/wordpress-no-content` as a dev dependency for plain unit tests.
+
+These fakes are part of the public surface and are versioned with core. Projects consuming this library can depend on them for their own tests and upgrade within normal SemVer guarantees.
+
 ## Development
 
 ```sh
