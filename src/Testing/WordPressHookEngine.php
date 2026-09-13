@@ -69,6 +69,10 @@ final class WordPressHookEngine
         // test runners start inside the project.
         foreach (self::composerRoots($packageDir) as $root) {
             $candidates[] = $root . '/wordpress';
+            // A root-manifest extra configuration wins over the adopted
+            // default, and matters under composer 1 whose install manifest
+            // records no install paths at all.
+            $candidates[] = self::configuredInstallDir($root) ?: $root . '/var/wordpress';
             $candidates[] = $root . '/var/wordpress';
         }
 
@@ -84,10 +88,10 @@ final class WordPressHookEngine
     /**
      * The consuming project's root from composer.json boundaries, then the
      * working directory the runner was launched from. Both feed the same
-     * installer-path candidates (the Roots installer's default wordpress/,
-     * or var/wordpress when consumers adopt this package's extra entry;
-     * extras from dependencies are not inherited by the root, hence the
-     * default first).
+     * installer-path candidates: the Roots installer's default wordpress/
+     * (extras from dependencies are not inherited by the root, hence the
+     * default first), a custom extra.wordpress-install-dir where the root
+     * configures one, and the adopted var/wordpress default.
      *
      * @return list<string>
      */
@@ -101,10 +105,10 @@ final class WordPressHookEngine
 
     /**
      * The WordPress package's actual install location, read from composer's
-     * installed manifest. The manifest records every package's install path,
-     * so no fixed filesystem layout is assumed: a vendor directory inside or
-     * outside the project, an installer-plugin destination, or the fallback
-     * in-vendor install all resolve the same way.
+     * installed manifest. Composer 2 entries record an install path, so a
+     * vendor directory inside or outside the project, an installer-plugin
+     * destination, or the fallback in-vendor install all resolve the same
+     * way; Composer 1 entries fall back to vendor/<name>.
      */
     private static function locateFromInstalledMetadata(string $packageDir): string
     {
@@ -128,16 +132,17 @@ final class WordPressHookEngine
         }
 
         foreach ($entries as $entry) {
-            if (!is_array($entry) || !is_string($entry['install-path'] ?? null)) {
+            if (!is_array($entry) || !is_string($entry['name'] ?? null)) {
                 continue;
             }
 
-            // The manifest lives in vendor/composer/ and its relative
-            // install paths are anchored there. Interpreting them against
-            // the vendor root or the process cwd could land on an unrelated
-            // WordPress checkout that happens to sit nearby.
-            $installPath = $entry['install-path'];
-            $installDir = self::isAbsolutePath($installPath) ? $installPath : $vendorDir . '/composer/' . $installPath;
+            $installPath = $entry['install-path'] ?? null;
+
+            // Composer 1 manifests record no install paths; without an
+            // installer plugin the package sits at vendor/<name>.
+            $installDir = is_string($installPath)
+                ? (self::isAbsolutePath($installPath) ? $installPath : $vendorDir . '/composer/' . $installPath)
+                : $vendorDir . '/' . $entry['name'];
 
             if (is_dir($installDir . '/wp-includes')) {
                 // Install paths are relative; consumers expect a real path.
@@ -146,6 +151,26 @@ final class WordPressHookEngine
         }
 
         return '';
+    }
+
+    /** The root manifest's extra.wordpress-install-dir, the destination the Roots installer resolves relative to the root. */
+    private static function configuredInstallDir(string $root): string
+    {
+        $manifestFile = $root . '/composer.json';
+
+        if (!is_file($manifestFile)) {
+            return '';
+        }
+
+        $decoded = json_decode((string) file_get_contents($manifestFile), true);
+
+        $target = is_array($decoded) ? ($decoded['extra']['wordpress-install-dir'] ?? null) : null;
+
+        if (!is_string($target) || $target === '') {
+            return '';
+        }
+
+        return self::isAbsolutePath($target) ? $target : $root . '/' . $target;
     }
 
     /** Windows installs record destinations on other drives as D:/path, which is absolute despite lacking a leading slash. */

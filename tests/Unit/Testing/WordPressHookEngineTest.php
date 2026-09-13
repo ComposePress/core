@@ -55,6 +55,40 @@ final class WordPressHookEngineTest extends TestCase
         });
     }
 
+    /** Composer 1 manifests record no install paths; the package defaults to vendor/<name>. */
+    public function testLocatesWordPressFromComposerOneManifest(): void
+    {
+        self::withFixture(static function (string $root): void {
+            $testingDir = $root . '/shared/vendor/composepress/core/src/Testing';
+            mkdir($testingDir, 0777, true);
+            mkdir($root . '/shared/vendor/composer', 0777, true);
+            $package = $root . '/shared/vendor/roots/wordpress-no-content';
+            mkdir($package . '/wp-includes', 0777, true);
+            file_put_contents(
+                $root . '/shared/vendor/composer/installed.json',
+                '{"packages":[{"name":"roots/wordpress-no-content","version":"7.1.0"}]}',
+            );
+
+            self::assertDiscovers($package, $testingDir);
+        });
+    }
+
+    /** The consumer's root manifest may configure the installer destination. */
+    public function testLocatesWordPressFromConfiguredInstallDir(): void
+    {
+        self::withFixture(static function (string $root): void {
+            $testingDir = $root . '/app/vendor/composepress/core/src/Testing';
+            mkdir($testingDir, 0777, true);
+            mkdir($root . '/web/wp/wp-includes', 0777, true);
+            file_put_contents(
+                $root . '/composer.json',
+                '{"extra":{"wordpress-install-dir":"web/wp"}}',
+            );
+
+            self::assertDiscovers($root . '/web/wp', $testingDir);
+        });
+    }
+
     /**
      * A consumer with a relocated vendor directory (composer config.vendor-dir)
      * and a nameless manifest — both valid for Composer root projects — must
