@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-// Preload the real WP_Hook engine for the Testing fakes when the vendored
-// WordPress core (roots/wordpress-no-content) is present.
-$wpCoreDir = getenv('WP_CORE_DIR') ?: dirname(__DIR__) . '/var/wordpress';
-if (is_file($wpCoreDir . '/wp-includes/class-wp-hook.php')) {
-    require_once $wpCoreDir . '/wp-includes/class-wp-hook.php';
-}
-
 if (!defined('WP_PLUGIN_DIR')) {
     define('WP_PLUGIN_DIR', '/tmp/wordpress/wp-content/plugins');
 }

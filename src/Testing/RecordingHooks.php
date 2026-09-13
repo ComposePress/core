@@ -192,19 +192,7 @@ final class RecordingHooks implements Hooks
 
     private function engine(string $hook): WP_Hook
     {
-        if (!class_exists(WP_Hook::class)) {
-            throw new \LogicException(
-                'RecordingHooks delegates to WP_Hook. Load WordPress, or add roots/wordpress-no-content as a dev dependency.',
-            );
-        }
-
-        // WP_Hook's methods call the unqualified global function; it exists
-        // whenever real WordPress loaded plugin.php, and the guarded shim
-        // provides it otherwise. Never eager-load: defining the global while
-        // WordPress later loads plugin.php would be a fatal redeclaration.
-        if (!function_exists('_wp_filter_build_unique_id')) {
-            require_once __DIR__ . '/wp_hook_globals.php';
-        }
+        WordPressHookEngine::ensureLoaded();
 
         return $this->engines[$hook] ??= new WP_Hook();
     }
