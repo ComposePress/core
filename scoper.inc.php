@@ -13,6 +13,7 @@ return [
         'add_filter',
         'remove_action',
         'remove_filter',
+        '_wp_filter_build_unique_id',
         'register_activation_hook',
         'register_deactivation_hook',
         'register_uninstall_hook',
@@ -21,6 +22,7 @@ return [
     ],
     'exclude-classes' => [
         'WP_Error',
+        'WP_Hook',
         'WP_Post',
     ],
     'exclude-constants' => [

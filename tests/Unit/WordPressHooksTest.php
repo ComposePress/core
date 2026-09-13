@@ -6,6 +6,9 @@ namespace ComposePress\Core\Tests\Unit;
 
 use ComposePress\Core\Plugin;
 use ComposePress\Core\PluginContext;
+use ComposePress\Core\Testing\RecordingActivator;
+use ComposePress\Core\Testing\RecordingDeactivator;
+use ComposePress\Core\Testing\SpyingUninstall;
 use ComposePress\Core\WordPressHooks;
 use PHPUnit\Framework\TestCase;
 
@@ -52,9 +55,9 @@ final class WordPressHooksTest extends TestCase
         $plugin = new Plugin(
             new PluginContext('/plugins/example/example.php', 'example', '1.0.0'),
             [],
-            activator: new RecordingLifecycle(),
-            deactivator: new RecordingLifecycle(),
-            uninstaller: RecordingUninstall::class,
+            activator: $activator = new RecordingActivator(),
+            deactivator: $deactivator = new RecordingDeactivator(),
+            uninstaller: SpyingUninstall::class,
         );
 
         $plugin->boot();
@@ -64,9 +67,11 @@ final class WordPressHooksTest extends TestCase
             array_column($GLOBALS['composepress_test_lifecycle'], 0),
         );
         self::assertSame(
-            [RecordingUninstall::class, 'uninstall'],
+            [SpyingUninstall::class, 'uninstall'],
             $GLOBALS['composepress_test_lifecycle'][2][2],
         );
+        self::assertSame([$activator, 'activate'], $GLOBALS['composepress_test_lifecycle'][0][2]);
+        self::assertSame([$deactivator, 'deactivate'], $GLOBALS['composepress_test_lifecycle'][1][2]);
     }
 
     public function testRejectsInvalidUninstallerClass(): void

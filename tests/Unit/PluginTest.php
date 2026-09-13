@@ -9,6 +9,8 @@ use ComposePress\Core\Hooks;
 use ComposePress\Core\Plugin;
 use ComposePress\Core\PluginContext;
 use ComposePress\Core\RequirementsNotMet;
+use ComposePress\Core\Testing\RecordingHooks;
+use ComposePress\Core\Testing\RecordingSubscriber;
 use PHPUnit\Framework\TestCase;
 
 final class PluginTest extends TestCase
@@ -26,8 +28,8 @@ final class PluginTest extends TestCase
         $plugin->boot();
 
         self::assertTrue($plugin->isBooted());
-        self::assertSame(1, $subscriber->subscriptions);
-        self::assertSame(['example_hook'], $hooks->actions);
+        self::assertSame(1, $subscriber->invocations());
+        self::assertSame(['example_hook'], $hooks->actionNames());
     }
 
     public function testRequirementsAreReportedAndGateBoot(): void
@@ -116,7 +118,7 @@ final class PluginTest extends TestCase
         }
 
         self::assertFalse($plugin->isBooted());
-        self::assertSame(['before_failure'], $hooks->actions);
+        self::assertSame(['before_failure'], $hooks->actionNames());
 
         $this->expectException(\LogicException::class);
         $plugin->boot();
