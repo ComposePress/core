@@ -198,6 +198,14 @@ final class RecordingHooks implements Hooks
             );
         }
 
+        // WP_Hook's methods call the unqualified global function; it exists
+        // whenever real WordPress loaded plugin.php, and the guarded shim
+        // provides it otherwise. Never eager-load: defining the global while
+        // WordPress later loads plugin.php would be a fatal redeclaration.
+        if (!function_exists('_wp_filter_build_unique_id')) {
+            require_once __DIR__ . '/wp_hook_globals.php';
+        }
+
         return $this->engines[$hook] ??= new WP_Hook();
     }
 

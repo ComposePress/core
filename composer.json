@@ -31,9 +31,6 @@
     "wordpress-install-dir": "var/wordpress"
   },
   "autoload": {
-    "files": [
-      "src/Testing/wp_hook_globals.php"
-    ],
     "psr-4": {
       "ComposePress\\Core\\": "src/"
     }
