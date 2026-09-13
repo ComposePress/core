@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+$prefix = getenv('COMPOSEPRESS_SCOPE_PREFIX');
+if ($prefix === false || $prefix === '') {
+    $prefix = 'ComposePressScoped';
+}
 $buildDirectory = __DIR__ . '/../build';
 $files = glob($buildDirectory . '/*.php') ?: [];
 sort($files);
@@ -12,13 +16,13 @@ if ($files === []) {
 }
 
 $forbidden = [
-    'ComposePressScoped\\add_action',
-    'ComposePressScoped\\add_filter',
-    'ComposePressScoped\\register_activation_hook',
-    'ComposePressScoped\\register_deactivation_hook',
-    'ComposePressScoped\\register_uninstall_hook',
-    'ComposePressScoped\\plugin_dir_path',
-    'ComposePressScoped\\plugins_url',
+    $prefix . '\\add_action',
+    $prefix . '\\add_filter',
+    $prefix . '\\register_activation_hook',
+    $prefix . '\\register_deactivation_hook',
+    $prefix . '\\register_uninstall_hook',
+    $prefix . '\\plugin_dir_path',
+    $prefix . '\\plugins_url',
 ];
 
 foreach ($files as $file) {
@@ -28,7 +32,7 @@ foreach ($files as $file) {
         exit(1);
     }
 
-    if (!str_contains($contents, 'namespace ComposePressScoped\\ComposePress\\Core;')) {
+    if (!str_contains($contents, 'namespace ' . $prefix . '\\ComposePress\\Core;')) {
         fwrite(STDERR, "Missing scoped namespace in {$file}.\n");
         exit(1);
     }
