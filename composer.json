@@ -25,7 +25,7 @@
     "roots/wordpress-no-content": "^7.1"
   },
   "suggest": {
-    "roots/wordpress-no-content": "Provides a real WP_Hook engine so ComposePress\\Core\\Testing\\RecordingHooks can run in unit tests without loading WordPress"
+    "roots/wordpress-no-content": "Provides the WP_Hook engine ComposePress\\Core\\Testing\\RecordingHooks delegates to; discovered automatically, no bootstrap wiring required"
   },
   "extra": {
     "wordpress-install-dir": "var/wordpress"
